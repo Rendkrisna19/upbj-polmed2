@@ -13,11 +13,17 @@ use App\Livewire\User\BuatPermohonan;
 use App\Livewire\User\RiwayatPermohonan;
 use App\Livewire\Admin\PermohonanMasuk;
 use App\Livewire\Admin\PekerjaanBerjalan;
+use Illuminate\Support\Facades\Artisan;
 /*
 |--------------------------------------------------------------------------
 | Web Routes UPBJ POLMED
 |--------------------------------------------------------------------------
 */
+
+Route::get('/setup-storage', function () {
+    Artisan::call('storage:link');
+    return 'Storage berhasil dilink!';
+});
 
 // Rute Publik (Guest) - Diarahkan ke komponen Login Livewire
 Route::get('/', Login::class)->name('login');
