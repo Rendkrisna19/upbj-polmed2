@@ -1,0 +1,42 @@
+name: Auto Deploy Laravel to Hostinger
+
+# Script ini akan jalan setiap kali ada push/commit ke branch 'main'
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Connect via SSH and Deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        # Perintah di bawah ini yang akan dijalankan otomatis di server Hostinger!
+        script: |
+          cd domains/lightcoral-curlew-189532.hostingersite.com/public_html
+          
+          # 1. Tarik kode terbaru dari GitHub
+          git pull origin main
+          
+          # 2. Update dependensi PHP jika ada yang baru
+          composer install --optimize-autoloader --no-dev
+          
+          # 3. Compile asset Frontend (Penting untuk Livewire & Tailwind CSS!)
+          npm install
+          npm run build
+          
+          # 4. Update Database jika ada file migrasi baru
+          php artisan migrate --force
+          
+          # 5. Publish ulang asset Livewire (berjaga-jaga jika ada update versi)
+          php artisan livewire:publish --assets
+          
+          # 6. Bersihkan cache lama agar web langsung refresh
+          php artisan optimize:clear
