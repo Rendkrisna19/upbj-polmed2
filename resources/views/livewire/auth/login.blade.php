@@ -15,9 +15,9 @@
 
         <div class="w-full max-w-md space-y-8">
             <div class="text-center">
-                <img src="" alt="Logo Polmed" class="h-24 mx-auto mb-6 object-contain drop-shadow-sm">
+                <img src="https://i0.wp.com/tambahpinter.com/wp-content/uploads/2020/04/Logo-POLMED-1536x1449.png" alt="Logo Polmed" class="h-24 mx-auto mb-6 object-contain drop-shadow-sm">
                 
-                <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">UPBJ POLMED732647</h1>
+                <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">UPBJ POLMED</h1>
                 <p class="mt-3 text-sm text-gray-500 dark:text-gray-400 leading-relaxed px-4">
                     Sistem Informasi Manajemen Pengadaan Barang dan Jasa <br class="hidden sm:block"> Politeknik Negeri Medan.
                 </p>

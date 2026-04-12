@@ -14,6 +14,8 @@ use App\Livewire\User\RiwayatPermohonan;
 use App\Livewire\Admin\PermohonanMasuk;
 use App\Livewire\Admin\PekerjaanBerjalan;
 use Illuminate\Support\Facades\Artisan;
+use App\Livewire\Admin\RealisasiSelesai;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes UPBJ POLMED
@@ -61,6 +63,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', Admin::class)->name('admin.dashboard');
         Route::get('/permohonan-masuk', PermohonanMasuk::class)->name('admin.permohonan_masuk');
         Route::get('/pekerjaan-berjalan', PekerjaanBerjalan::class)->name('admin.pekerjaan_berjalan');
+        Route::get('/realisasi-selesai', RealisasiSelesai::class)->name('admin.realisasi-selesai');
     });
 
 
