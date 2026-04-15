@@ -15,6 +15,8 @@ use App\Livewire\Admin\PermohonanMasuk;
 use App\Livewire\Admin\PekerjaanBerjalan;
 use Illuminate\Support\Facades\Artisan;
 use App\Livewire\Admin\RealisasiSelesai;
+use App\Livewire\Admin\PengaturanAkun;
+use App\Livewire\SuperAdmin\PengaturanSistem;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +46,8 @@ Route::middleware('auth')->group(function () {
         return redirect('/');
     })->name('logout');
 
+    Route::get('/pengaturan-akun', PengaturanAkun::class)->name('pengaturan.akun');
+
 
     // ------------------------------------------
     // ROUTES SUPER ADMIN
@@ -52,6 +56,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', SuperAdmin::class)->name('super_admin.dashboard');
         Route::get('/users', KelolaUser::class)->name('users.index');
         Route::get('/unit', MasterUnit::class)->name('unit.index');
+        Route::get('/pengaturan-sistem', PengaturanSistem::class)->name('pengaturan_sistem');
     });
 
 
@@ -64,6 +69,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/permohonan-masuk', PermohonanMasuk::class)->name('admin.permohonan_masuk');
         Route::get('/pekerjaan-berjalan', PekerjaanBerjalan::class)->name('admin.pekerjaan_berjalan');
         Route::get('/realisasi-selesai', RealisasiSelesai::class)->name('admin.realisasi-selesai');
+        Route::get('/pengaturan-akun', PengaturanAkun::class)->name('admin.pengaturan-akun');
     });
 
 

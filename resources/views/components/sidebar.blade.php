@@ -16,12 +16,11 @@
         @php
             $dashboardRoute = match(auth()->user()->role ?? '') {
                 'super_admin' => 'super_admin.dashboard',
-                'admin' => 'admin.dashboard',
-                'user' => 'user.dashboard',
-                default => 'login'
+                'admin'       => 'admin.dashboard',
+                'user'        => 'user.dashboard',
+                default       => 'login'
             };
         @endphp
-
         <div>
             <p x-show="!sidebarCollapsed" class="px-2 mb-3 text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Overview</p>
             <div x-show="sidebarCollapsed" class="border-t border-gray-200 dark:border-gray-700 mx-2 mb-3" x-cloak></div>
@@ -58,36 +57,14 @@
                 <a href="{{ route('admin.permohonan_masuk') }}" wire:navigate class="flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group {{ request()->routeIs('admin.permohonan_masuk') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100' }}" :class="sidebarCollapsed ? 'justify-center relative' : ''">
                     <i class="fa-solid fa-inbox w-6 text-center text-lg {{ request()->routeIs('admin.permohonan_masuk') ? 'text-white' : 'text-gray-400 group-hover:text-primary transition-colors' }}"></i>
                     <span x-show="!sidebarCollapsed" class="ml-3 flex-1">Permohonan Masuk</span>
-                    
-                    @php $pendingCount = \App\Models\Permohonan::where('status', 'Baru')->count(); @endphp
-                    @if($pendingCount > 0)
-                        <span x-show="!sidebarCollapsed" class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">{{ $pendingCount }}</span>
-                        <span x-show="sidebarCollapsed" class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full animate-ping" x-cloak></span>
-                    @endif
                 </a>
                 <a href="{{ route('admin.pekerjaan_berjalan') }}" wire:navigate class="flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group {{ request()->routeIs('admin.pekerjaan_berjalan') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100' }}" :class="sidebarCollapsed ? 'justify-center' : ''">
                     <i class="fa-solid fa-person-digging w-6 text-center text-lg {{ request()->routeIs('admin.pekerjaan_berjalan') ? 'text-white' : 'text-gray-400 group-hover:text-primary transition-colors' }}"></i>
                     <span x-show="!sidebarCollapsed" class="ml-3">Pekerjaan Berjalan</span>
-                    
-                    @php $pekerjaanCount = \App\Models\Permohonan::where('status', 'Proses')->count(); @endphp
-                    @if($pekerjaanCount > 0)
-                        <span x-show="!sidebarCollapsed" class="ml-auto bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400 text-[10px] font-bold px-2 py-0.5 rounded-full">{{ $pekerjaanCount }}</span>
-                    @endif
                 </a>
                 <a href="{{ route('admin.realisasi-selesai') }}" wire:navigate class="flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group {{ request()->routeIs('admin.realisasi-selesai') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100' }}" :class="sidebarCollapsed ? 'justify-center' : ''">
                     <i class="fa-solid fa-check-double w-6 text-center text-lg {{ request()->routeIs('admin.realisasi-selesai') ? 'text-white' : 'text-gray-400 group-hover:text-primary transition-colors' }}"></i>
                     <span x-show="!sidebarCollapsed" class="ml-3">Realisasi Selesai</span>
-                </a>
-            </div>
-        </div>
-        
-        <div>
-            <p x-show="!sidebarCollapsed" class="px-2 mb-3 text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Laporan</p>
-            <div x-show="sidebarCollapsed" class="border-t border-gray-200 dark:border-gray-700 mx-2 mb-3" x-cloak></div>
-            <div class="space-y-1.5">
-                <a href="#" wire:navigate class="flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100" :class="sidebarCollapsed ? 'justify-center' : ''">
-                    <i class="fa-solid fa-file-pdf w-6 text-center text-lg text-gray-400 group-hover:text-primary transition-colors"></i>
-                    <span x-show="!sidebarCollapsed" class="ml-3">Semua Laporan</span>
                 </a>
             </div>
         </div>
@@ -98,11 +75,10 @@
             <p x-show="!sidebarCollapsed" class="px-2 mb-3 text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Data Master</p>
             <div x-show="sidebarCollapsed" class="border-t border-gray-200 dark:border-gray-700 mx-2 mb-3" x-cloak></div>
             <div class="space-y-1.5">
-                <a href="{{ route('super_admin.users.index') }}" wire:navigate class="flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group {{ request()->routeIs('super_admin.users.*') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100' }}" :class="sidebarCollapsed ? 'justify-center' : ''">
-                    <i class="fa-solid fa-users-gear w-6 text-center text-lg {{ request()->routeIs('super_admin.users.*') ? 'text-white' : 'text-gray-400 group-hover:text-primary transition-colors' }}"></i>
+                <a href="{{ route('users.index') }}" wire:navigate class="flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group {{ request()->routeIs('users.index*') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100' }}" :class="sidebarCollapsed ? 'justify-center' : ''">
+                    <i class="fa-solid fa-users-gear w-6 text-center text-lg {{ request()->routeIs('users.index*') ? 'text-white' : 'text-gray-400 group-hover:text-primary transition-colors' }}"></i>
                     <span x-show="!sidebarCollapsed" class="ml-3">Kelola Pengguna</span>
                 </a>
-                
                 <a href="{{ route('unit.index') }}" wire:navigate class="flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group {{ request()->routeIs('unit.*') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100' }}" :class="sidebarCollapsed ? 'justify-center' : ''">
                     <i class="fa-solid fa-sitemap w-6 text-center text-lg {{ request()->routeIs('unit.*') ? 'text-white' : 'text-gray-400 group-hover:text-primary transition-colors' }}"></i>
                     <span x-show="!sidebarCollapsed" class="ml-3">Master Unit</span>
@@ -115,17 +91,18 @@
             <p x-show="!sidebarCollapsed" class="px-2 mb-3 text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Pengaturan</p>
             <div x-show="sidebarCollapsed" class="border-t border-gray-200 dark:border-gray-700 mx-2 mb-3" x-cloak></div>
             <div class="space-y-1.5">
-                <a href="#" wire:navigate class="flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100" :class="sidebarCollapsed ? 'justify-center' : ''">
-                    <i class="fa-solid fa-user-shield w-6 text-center text-lg text-gray-400 group-hover:text-primary transition-colors"></i>
+                
+                <a href="{{ route('pengaturan.akun') }}" wire:navigate class="flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group {{ request()->routeIs('pengaturan.akun') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100' }}" :class="sidebarCollapsed ? 'justify-center' : ''">
+                    <i class="fa-solid fa-user-shield w-6 text-center text-lg {{ request()->routeIs('pengaturan.akun') ? 'text-white' : 'text-gray-400 group-hover:text-primary transition-colors' }}"></i>
                     <span x-show="!sidebarCollapsed" class="ml-3">Pengaturan Akun</span>
                 </a>
 
                 @if(auth()->check() && auth()->user()->role === 'super_admin')
-                <a href="#" wire:navigate class="flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100" :class="sidebarCollapsed ? 'justify-center' : ''">
-                    <i class="fa-solid fa-sliders w-6 text-center text-lg text-gray-400 group-hover:text-primary transition-colors"></i>
-                    <span x-show="!sidebarCollapsed" class="ml-3">Pengaturan Sistem</span>
-                </a>
-                @endif
+<a href="{{ route('pengaturan_sistem') }}" wire:navigate class="flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group {{ request()->routeIs('pengaturan_sistem') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100' }}" :class="sidebarCollapsed ? 'justify-center' : ''">
+    <i class="fa-solid fa-sliders w-6 text-center text-lg {{ request()->routeIs('pengaturan_sistem') ? 'text-white' : 'text-gray-400 group-hover:text-primary transition-colors' }}"></i>
+    <span x-show="!sidebarCollapsed" class="ml-3">Pengaturan Sistem</span>
+</a>
+@endif
             </div>
         </div>
 
@@ -135,12 +112,16 @@
         <div class="relative">
             <button @click="profileOpen = !profileOpen" class="w-full flex items-center p-2 rounded-xl hover:bg-white dark:hover:bg-gray-800 transition-colors shadow-sm border border-transparent hover:border-gray-200 dark:hover:border-gray-700" :class="sidebarCollapsed ? 'justify-center' : 'justify-between'">
                 <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-full bg-primary/20 dark:bg-primary/30 text-primary dark:text-primary-light flex items-center justify-center font-bold shadow-inner shrink-0">
-                        {{ substr(auth()->user()->name ?? 'U', 0, 1) }}
+                    <div class="w-9 h-9 rounded-full bg-primary/20 dark:bg-primary/30 text-primary dark:text-primary-light flex items-center justify-center font-bold shadow-inner shrink-0 overflow-hidden">
+                        @if(auth()->check() && auth()->user()->profile_photo)
+                            <img src="{{ asset('storage/' . auth()->user()->profile_photo) }}" class="w-full h-full object-cover">
+                        @else
+                            {{ substr(auth()->user()->name ?? 'U', 0, 1) }}
+                        @endif
                     </div>
                     <div x-show="!sidebarCollapsed" class="text-left text-sm" x-transition>
-                        <p class="font-semibold text-gray-900 dark:text-white truncate w-24">{{ auth()->user()->name ?? 'Alex Smith' }}</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 capitalize">{{ str_replace('_', ' ', auth()->user()->role ?? 'Admin') }}</p>
+                        <p class="font-semibold text-gray-900 dark:text-white truncate w-24">{{ auth()->user()->name ?? 'User' }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 capitalize">{{ str_replace('_', ' ', auth()->user()->role ?? 'Role') }}</p>
                     </div>
                 </div>
                 <i x-show="!sidebarCollapsed" class="fa-solid fa-ellipsis-vertical text-gray-400 px-2"></i>

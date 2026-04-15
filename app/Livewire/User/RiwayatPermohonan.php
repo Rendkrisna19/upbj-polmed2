@@ -17,6 +17,9 @@ class RiwayatPermohonan extends Component
 
     public $search = '';
     public $statusFilter = ''; 
+    public $monthFilter = '';
+    public $yearFilter = '';
+    public $perPage = 10; // Default 10 data per halaman
     
     // Properti Modal Detail
     public $isModalOpen = false;
@@ -26,19 +29,23 @@ class RiwayatPermohonan extends Component
     public $isPdfModalOpen = false;
     public $previewPdfUrl = null;
 
-    public function updatingSearch()
-    {
-        $this->resetPage();
-    }
+    // Reset pagination ketika filter diubah
+    public function updatingSearch() { $this->resetPage(); }
+    public function updatingStatusFilter() { $this->resetPage(); }
+    public function updatingMonthFilter() { $this->resetPage(); }
+    public function updatingYearFilter() { $this->resetPage(); }
+    public function updatingPerPage() { $this->resetPage(); }
 
-    public function updatingStatusFilter()
+    public function mount()
     {
-        $this->resetPage();
+        // Set default filter tahun ke tahun sekarang
+        $this->yearFilter = date('Y');
     }
 
     public function render()
     {
-        $query = Permohonan::where('user_id', auth()->id())->with('items');
+        // OPTIMASI: Gunakan withCount untuk memperingan load query tabel
+        $query = Permohonan::where('user_id', auth()->id())->withCount('items');
 
         if (!empty($this->search)) {
             $query->where('judul', 'like', '%' . $this->search . '%');
@@ -48,12 +55,31 @@ class RiwayatPermohonan extends Component
             $query->where('status', $this->statusFilter);
         }
 
-        $riwayat = $query->latest()->paginate(10);
+        if (!empty($this->monthFilter)) {
+            $query->whereMonth('tanggal', $this->monthFilter);
+        }
 
-        return view('livewire.user.riwayat-permohonan', compact('riwayat'));
+        if (!empty($this->yearFilter)) {
+            $query->whereYear('tanggal', $this->yearFilter);
+        }
+
+        $riwayat = $query->latest()->paginate($this->perPage);
+
+        // Ambil daftar tahun unik yang ada di database untuk opsi dropdown
+        $availableYears = Permohonan::selectRaw('YEAR(tanggal) as year')
+                            ->distinct()
+                            ->orderBy('year', 'desc')
+                            ->pluck('year');
+
+        // Jika database kosong, tampilkan tahun saat ini saja
+        if($availableYears->isEmpty()){
+            $availableYears = collect([date('Y')]);
+        }
+
+        return view('livewire.user.riwayat-permohonan', compact('riwayat', 'availableYears'));
     }
 
-    // Modal Detail
+    // Modal Detail (Memuat detail item lengkap hanya saat modal dibuka)
     public function showDetail($id)
     {
         $this->selectedData = Permohonan::with('items')
@@ -98,7 +124,6 @@ class RiwayatPermohonan extends Component
 
             $permohonan->delete();
 
-            // Jika modal detail sedang terbuka saat dihapus, tutup modalnya
             $this->closeModal();
 
             $this->dispatch('toast', [

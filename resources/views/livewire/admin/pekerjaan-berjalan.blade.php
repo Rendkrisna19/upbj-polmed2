@@ -1,72 +1,125 @@
 <div class="w-full pb-12">
+    <style>
+        .pagination-custom nav span[aria-current="page"] > span {
+            background-color: #9333ea !important; /* text-purple-600 */
+            border-color: #9333ea !important;
+            color: white !important;
+        }
+        .pagination-custom nav a:hover {
+            background-color: #faf5ff !important; /* bg-purple-50 */
+            color: #7e22ce !important; /* text-purple-700 */
+            border-color: #d8b4fe !important; /* border-purple-300 */
+        }
+    </style>
+
     <div class="mb-8">
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight flex items-center">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight flex items-center">
             Pekerjaan Berjalan
             @if($pekerjaan->total() > 0)
-                <span class="ml-4 bg-purple-500 text-white text-sm font-bold px-3 py-1 rounded-full shadow-sm animate-pulse">
+                <span class="ml-4 bg-purple-50 text-purple-700 border border-purple-200 text-xs font-bold px-2.5 py-1 rounded-full shadow-sm dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800">
                     {{ $pekerjaan->total() }} Aktif
                 </span>
             @endif
         </h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Daftar pengadaan barang dan jasa yang sedang dalam proses pengerjaan oleh tim Admin.</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Daftar pengadaan barang dan jasa yang sedang dalam proses pengerjaan oleh tim Admin.</p>
     </div>
 
-    <div class="bg-white dark:bg-card-dark rounded-3xl shadow-md border-t-4 border-t-purple-500 border-x border-b border-gray-100 dark:border-gray-800 overflow-hidden">
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
         
-        <div class="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/30 dark:bg-gray-900/10">
-            <div class="relative w-full sm:w-96">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                    <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+        <div class="p-5 border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20 space-y-4 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:justify-between gap-4">
+            
+            <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto flex-grow">
+                <div class="relative w-full sm:max-w-md">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                        <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                    </div>
+                    <input wire:model.live.debounce.300ms="search" type="search" class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 block pl-10 py-2.5 transition-colors shadow-sm" placeholder="Cari judul pekerjaan atau nama unit...">
                 </div>
-                <input wire:model.live.debounce.300ms="search" type="search" class="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 text-sm rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 block pl-11 p-3.5 transition-all shadow-sm" placeholder="Cari judul permohonan atau nama unit...">
+
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Tampilkan:</span>
+                    <select wire:model.live="perPage" class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 py-2.5 px-3 transition-colors shadow-sm font-medium cursor-pointer">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                <select wire:model.live="monthFilter" class="w-full sm:w-auto bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 py-2.5 px-3 transition-colors shadow-sm font-medium cursor-pointer">
+                    <option value="">Semua Bulan</option>
+                    <option value="01">Januari</option>
+                    <option value="02">Februari</option>
+                    <option value="03">Maret</option>
+                    <option value="04">April</option>
+                    <option value="05">Mei</option>
+                    <option value="06">Juni</option>
+                    <option value="07">Juli</option>
+                    <option value="08">Agustus</option>
+                    <option value="09">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </select>
+
+                <select wire:model.live="yearFilter" class="w-full sm:w-auto bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 py-2.5 px-3 transition-colors shadow-sm font-medium cursor-pointer">
+                    <option value="">Semua Tahun</option>
+                    @foreach($availableYears as $year)
+                        <option value="{{ $year }}">{{ $year }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
 
         <div class="overflow-x-auto">
-            <table class="w-full text-sm text-left">
-                <thead class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-800/50">
+            <table class="w-full text-sm text-left border-collapse">
+                <thead class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide bg-gray-50 dark:bg-gray-800">
                     <tr>
-                        <th class="px-6 py-4 font-bold">Mulai Diproses</th>
-                        <th class="px-6 py-4 font-bold">Unit / Pemohon</th>
-                        <th class="px-6 py-4 font-bold">Judul Pekerjaan</th>
-                        <th class="px-6 py-4 font-bold text-center">Item</th>
-                        <th class="px-6 py-4 font-bold text-right">Aksi</th>
+                        <th class="px-6 py-4 font-semibold">Mulai Diproses</th>
+                        <th class="px-6 py-4 font-semibold">Unit / Pemohon</th>
+                        <th class="px-6 py-4 font-semibold">Judul Pekerjaan</th>
+                        <th class="px-6 py-4 font-semibold text-center">Item</th>
+                        <th class="px-6 py-4 font-semibold text-right">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
                     @forelse ($pekerjaan as $item)
-                        <tr class="hover:bg-purple-50/50 dark:hover:bg-purple-900/10 transition-colors group">
-                            <td class="px-6 py-4 text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
-                                <i class="fa-solid fa-stopwatch text-purple-400 mr-2"></i> 
-                                {{ $item->updated_at->diffForHumans() }}
-                                <p class="text-xs text-gray-400 mt-1 ml-6">{{ \Carbon\Carbon::parse($item->updated_at)->format('d/m/Y') }}</p>
+                        <tr class="hover:bg-purple-50/50 dark:hover:bg-gray-800/60 transition-colors group">
+                            <td class="px-6 py-4 text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <i class="fa-solid fa-stopwatch text-purple-500 mr-2"></i> 
+                                    <span class="font-medium">{{ $item->updated_at->diffForHumans() }}</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1 ml-6">{{ \Carbon\Carbon::parse($item->updated_at)->format('d/m/Y') }}</p>
                             </td>
                             <td class="px-6 py-4">
-                                <div class="font-bold text-gray-900 dark:text-white">{{ $item->unit->nama_unit ?? '-' }}</div>
-                                <div class="text-xs text-gray-500 mt-0.5"><i class="fa-solid fa-user text-gray-400 mr-1"></i> {{ $item->user->name ?? '-' }}</div>
+                                <div class="font-semibold text-gray-900 dark:text-white">{{ $item->unit->nama_unit ?? 'Unit Tidak Diketahui' }}</div>
+                                <div class="text-xs text-gray-500 mt-1 flex items-center"><i class="fa-solid fa-user text-gray-400 mr-1.5"></i> {{ $item->user->name ?? 'User Terhapus' }}</div>
                             </td>
-                            <td class="px-6 py-4 font-bold text-gray-900 dark:text-white max-w-xs truncate" title="{{ $item->judul }}">
+                            <td class="px-6 py-4 font-medium text-gray-900 dark:text-white max-w-xs truncate" title="{{ $item->judul }}">
                                 {{ $item->judul }}
                             </td>
                             <td class="px-6 py-4 text-center">
-                                <span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs font-bold px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700">
-                                    {{ $item->items->count() }} Brg
+                                <span class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs font-semibold px-2.5 py-1 rounded-md border border-gray-200 dark:border-gray-700">
+                                    {{ $item->items_count }} Brg
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <button wire:click="showDetail({{ $item->id }})" class="inline-flex items-center justify-center px-4 py-2 rounded-xl text-white bg-purple-500 hover:bg-purple-600 transition-colors shadow-sm font-semibold text-xs shadow-purple-500/30" title="Kelola Pekerjaan">
+                                <button wire:click="showDetail({{ $item->id }})" class="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-purple-600 hover:bg-purple-700 transition-colors shadow-sm font-medium text-xs" title="Kelola Pekerjaan">
                                     <i class="fa-solid fa-bars-progress mr-2"></i> Kelola
                                 </button>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-20 text-center">
+                            <td colspan="5" class="px-6 py-16 text-center">
                                 <div class="flex flex-col items-center justify-center">
-                                    <div class="w-24 h-24 bg-gray-50 dark:bg-gray-800/50 rounded-full flex items-center justify-center mb-5 text-gray-400 shadow-inner">
-                                        <i class="fa-solid fa-clipboard-list text-4xl"></i>
+                                    <div class="w-16 h-16 bg-purple-50 dark:bg-purple-900/20 rounded-full flex items-center justify-center mb-4 text-purple-500">
+                                        <i class="fa-solid fa-clipboard-list text-2xl"></i>
                                     </div>
-                                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Tidak Ada Pekerjaan Aktif</h3>
+                                    <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-1">Tidak Ada Pekerjaan Aktif</h3>
                                     <p class="text-sm text-gray-500 max-w-sm">Saat ini tidak ada permohonan pengadaan yang sedang Anda kerjakan.</p>
                                 </div>
                             </td>
@@ -77,19 +130,19 @@
         </div>
 
         @if ($pekerjaan->hasPages())
-            <div class="p-5 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-card-dark">
+            <div class="p-5 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 pagination-custom">
                 {{ $pekerjaan->links() }}
             </div>
         @endif
     </div>
 
     @if($isModalOpen && $selectedData)
-        <div class="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto overflow-x-hidden bg-gray-900/70 backdrop-blur-sm p-4 transition-all" x-data x-transition>
-            <div class="relative w-full max-w-4xl bg-white dark:bg-card-dark rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-gray-100 dark:border-gray-800">
+        <div class="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto overflow-x-hidden bg-gray-900/60 backdrop-blur-sm p-4 transition-all" x-data x-transition>
+            <div class="relative w-full max-w-4xl bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-gray-200 dark:border-gray-800">
                 
-                <div class="flex justify-between items-center p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/30">
+                <div class="flex justify-between items-center p-5 border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30">
                     <div>
-                        <h3 class="text-xl font-extrabold text-gray-900 dark:text-white flex items-center">
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center">
                             <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center mr-3 dark:bg-purple-900/30 dark:text-purple-400">
                                 <i class="fa-solid fa-person-digging"></i>
                             </div>
@@ -97,63 +150,63 @@
                         </h3>
                         <p class="text-xs text-gray-500 mt-1 ml-11">Tiket #PRM-{{ str_pad($selectedData->id, 5, '0', STR_PAD_LEFT) }}</p>
                     </div>
-                    <button wire:click="closeModal" class="text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white rounded-xl p-2 transition-colors">
-                        <i class="fa-solid fa-xmark text-xl"></i>
+                    <button wire:click="closeModal" class="text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white rounded-lg p-2 transition-colors">
+                        <i class="fa-solid fa-xmark text-lg"></i>
                     </button>
                 </div>
 
-                <div class="p-6 overflow-y-auto custom-scrollbar flex-1">
+                <div class="p-6 overflow-y-auto flex-1">
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="lg:col-span-1 space-y-4">
-                            <div class="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 uppercase font-bold tracking-wider">Unit Pemohon</p>
-                                <p class="font-bold text-purple-600 dark:text-purple-400 text-base">{{ $selectedData->unit->nama_unit ?? '-' }}</p>
-                                <p class="text-sm text-gray-600 dark:text-gray-300 mt-1"><i class="fa-solid fa-user-circle mr-1"></i> {{ $selectedData->user->name ?? '-' }}</p>
+                            <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 uppercase font-semibold tracking-wider">Unit Pemohon</p>
+                                <p class="font-semibold text-purple-600 dark:text-purple-400 text-sm">{{ $selectedData->unit->nama_unit ?? '-' }}</p>
+                                <p class="text-xs text-gray-600 dark:text-gray-300 mt-1.5 flex items-center"><i class="fa-solid fa-user-circle mr-1.5"></i> {{ $selectedData->user->name ?? '-' }}</p>
                             </div>
 
-                            <div class="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 uppercase font-bold tracking-wider">Mulai Dikerjakan</p>
-                                <p class="font-bold text-gray-900 dark:text-white">{{ \Carbon\Carbon::parse($selectedData->updated_at)->translatedFormat('d F Y') }}</p>
+                            <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 uppercase font-semibold tracking-wider">Mulai Dikerjakan</p>
+                                <p class="font-medium text-gray-900 dark:text-white text-sm">{{ \Carbon\Carbon::parse($selectedData->updated_at)->translatedFormat('d F Y') }}</p>
                             </div>
 
-                            <div class="bg-blue-50 dark:bg-blue-900/10 rounded-2xl p-5 border border-blue-100 dark:border-blue-800/30">
-                                <p class="text-xs text-blue-600 dark:text-blue-400 mb-2 uppercase font-bold tracking-wider">Dokumen Referensi</p>
+                            <div class="bg-blue-50 dark:bg-blue-900/10 rounded-xl p-4 border border-blue-200 dark:border-blue-800/30">
+                                <p class="text-xs text-blue-700 dark:text-blue-400 mb-2 uppercase font-semibold tracking-wider">Dokumen Referensi</p>
                                 @if($selectedData->file_pdf)
-                                    <button wire:click="openPdfPreview('{{ $selectedData->file_pdf }}')" class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-white hover:bg-gray-50 text-blue-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-blue-400 text-sm font-bold rounded-xl transition-colors border border-blue-200 dark:border-blue-800/50 shadow-sm">
-                                        <i class="fa-solid fa-file-pdf mr-2 text-red-500 text-lg"></i> Cek Dokumen PDF
+                                    <button wire:click="openPdfPreview('{{ $selectedData->file_pdf }}')" class="w-full inline-flex items-center justify-center px-4 py-2 bg-white hover:bg-gray-50 text-blue-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-blue-400 text-sm font-medium rounded-lg transition-colors border border-blue-300 dark:border-blue-700 shadow-sm">
+                                        <i class="fa-solid fa-file-pdf mr-2 text-red-500"></i> Cek Dokumen PDF
                                     </button>
                                 @else
-                                    <span class="text-sm text-gray-500 italic">Tidak ada dokumen</span>
+                                    <span class="text-sm text-gray-500 italic block mt-1">Tidak ada dokumen</span>
                                 @endif
                             </div>
                         </div>
 
                         <div class="lg:col-span-2">
-                            <div class="mb-4">
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 uppercase font-bold tracking-wider">Judul Pengadaan</p>
-                                <p class="font-extrabold text-gray-900 dark:text-white text-lg">{{ $selectedData->judul }}</p>
+                            <div class="mb-5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-4 rounded-xl">
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 uppercase font-semibold tracking-wider">Judul Pengadaan</p>
+                                <p class="font-bold text-gray-900 dark:text-white text-base">{{ $selectedData->judul }}</p>
                             </div>
 
-                            <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-3 uppercase tracking-wider flex items-center border-b border-gray-100 dark:border-gray-800 pb-2">
-                                Rincian Barang yang Dibutuhkan <span class="ml-auto bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 px-3 py-1 rounded-lg text-xs">{{ $selectedData->items->count() }} Item</span>
+                            <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 uppercase tracking-wide flex items-center border-b border-gray-200 dark:border-gray-700 pb-2">
+                                Rincian Barang Kebutuhan <span class="ml-auto bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-2.5 py-0.5 rounded text-xs">{{ $selectedData->items->count() }} Item</span>
                             </h4>
                             
-                            <div class="border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden">
+                            <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                                 <table class="w-full text-sm text-left">
-                                    <thead class="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 uppercase tracking-wider">
+                                    <thead class="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 uppercase tracking-wide border-b border-gray-200 dark:border-gray-700">
                                         <tr>
-                                            <th class="px-5 py-3 font-bold w-12 text-center">No</th>
-                                            <th class="px-5 py-3 font-bold">Nama Barang / Jasa</th>
-                                            <th class="px-5 py-3 font-bold text-center w-28">Kuantitas</th>
+                                            <th class="px-5 py-3 font-semibold w-12 text-center">No</th>
+                                            <th class="px-5 py-3 font-semibold">Nama Barang / Jasa</th>
+                                            <th class="px-5 py-3 font-semibold text-center w-28">Kuantitas</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-900">
                                         @foreach($selectedData->items as $index => $item)
                                             <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-800/30">
                                                 <td class="px-5 py-3 text-center text-gray-500 font-medium">{{ $index + 1 }}</td>
-                                                <td class="px-5 py-3 font-bold text-gray-900 dark:text-white">{{ $item->nama_item }}</td>
-                                                <td class="px-5 py-3 text-center font-extrabold text-purple-600 dark:text-purple-400">
-                                                    {{ $item->jumlah }}
+                                                <td class="px-5 py-3 font-medium text-gray-900 dark:text-white">{{ $item->nama_item }}</td>
+                                                <td class="px-5 py-3 text-center font-semibold text-purple-600 dark:text-purple-400">
+                                                    {{ $item->jumlah }} Unit
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -164,8 +217,8 @@
                     </div>
                 </div>
 
-                <div class="p-6 border-t border-gray-100 dark:border-gray-800 flex flex-col-reverse sm:flex-row justify-between gap-4 bg-gray-50/50 dark:bg-gray-900/30">
-                    <button wire:click="closeModal" class="px-6 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-bold rounded-xl transition-colors shadow-sm text-center">
+                <div class="p-5 border-t border-gray-200 dark:border-gray-800 flex flex-col-reverse sm:flex-row justify-between gap-4 bg-gray-50/50 dark:bg-gray-800/30">
+                    <button wire:click="closeModal" class="px-6 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors shadow-sm text-center">
                         Tutup
                     </button>
                     
@@ -179,13 +232,13 @@
                             cancelButtonColor: '#6b7280',
                             confirmButtonText: 'Ya, Selesaikan!',
                             cancelButtonText: 'Batal',
-                            customClass: { popup: 'rounded-3xl shadow-2xl' }
+                            customClass: { popup: 'rounded-xl shadow-lg border border-gray-200 dark:border-gray-800' }
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 $wire.selesaikanPekerjaan({{ $selectedData->id }})
                             }
                         })
-                    " class="px-8 py-3 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/30 flex items-center justify-center active:scale-95">
+                    " class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm flex items-center justify-center">
                         <i class="fa-solid fa-check-double mr-2"></i> Tandai Selesai
                     </button>
                 </div>
@@ -194,18 +247,18 @@
     @endif
 
     @if($isPdfModalOpen && $previewPdfUrl)
-        <div class="fixed inset-0 z-[110] flex items-center justify-center bg-gray-900/80 backdrop-blur-md p-4 transition-all" x-data x-transition>
-            <div class="relative w-full max-w-5xl h-[85vh] bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-700">
-                <div class="flex justify-between items-center px-6 py-4 bg-gray-900 text-white shrink-0 border-b border-gray-800">
-                    <h3 class="text-sm font-semibold flex items-center">
-                        <i class="fa-solid fa-file-pdf text-red-500 mr-2 text-lg"></i> Pratinjau Dokumen PDF
+        <div class="fixed inset-0 z-[110] flex items-center justify-center bg-gray-900/80 backdrop-blur-sm p-4 transition-all" x-data x-transition>
+            <div class="relative w-full max-w-5xl h-[85vh] bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden flex flex-col border border-gray-700">
+                <div class="flex justify-between items-center px-5 py-3 bg-gray-900 text-white shrink-0 border-b border-gray-800">
+                    <h3 class="text-sm font-medium flex items-center">
+                        <i class="fa-solid fa-file-pdf text-red-500 mr-2"></i> Pratinjau Dokumen PDF
                     </h3>
                     <div class="flex items-center gap-2">
-                        <a href="{{ $previewPdfUrl }}" download class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white text-xs font-bold rounded-lg transition-colors border border-gray-700 flex items-center">
-                            <i class="fa-solid fa-download mr-2"></i> Unduh File
+                        <a href="{{ $previewPdfUrl }}" download class="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white text-xs font-medium rounded-lg transition-colors border border-gray-700 flex items-center">
+                            <i class="fa-solid fa-download mr-1.5"></i> Unduh
                         </a>
-                        <button wire:click="closePdfPreview" class="p-2 text-gray-400 hover:text-white hover:bg-red-500 rounded-lg transition-colors ml-2">
-                            <i class="fa-solid fa-xmark text-xl"></i>
+                        <button wire:click="closePdfPreview" class="p-1.5 text-gray-400 hover:text-white hover:bg-red-500 rounded-lg transition-colors ml-2">
+                            <i class="fa-solid fa-xmark text-lg"></i>
                         </button>
                     </div>
                 </div>

@@ -24,7 +24,7 @@
         </div>
     </div>
 
-    <div class="flex items-center gap-4 sm:gap-6">
+    <div class="flex items-center gap-4 sm:gap-5">
         
         <div class="hidden md:flex flex-col items-end text-right">
             <div class="flex items-center gap-2">
@@ -37,7 +37,7 @@
             <span class="text-xs font-medium text-gray-500 dark:text-gray-400" x-text="currentDate">Memuat tanggal...</span>
         </div>
 
-        <div class="w-px h-8 bg-gray-200 dark:bg-gray-700 hidden md:block"></div>
+        <div class="w-px h-8 bg-gray-200 dark:bg-gray-700 hidden md:block mx-1"></div>
 
         <button 
             @click="
@@ -49,12 +49,24 @@
                     localStorage.setItem('color-theme', 'light');
                 }
             "
-            class="w-10 h-10 rounded-xl flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:text-primary dark:hover:text-primary-light hover:shadow-sm transition-all shadow-inner"
+            class="w-10 h-10 rounded-xl flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:text-primary dark:hover:text-primary-light hover:shadow-sm transition-all shadow-inner shrink-0"
             title="Ganti Tema"
         >
             <i class="fa-solid fa-sun hidden dark:block text-yellow-400 text-lg"></i>
             <i class="fa-solid fa-moon block dark:hidden text-gray-600 text-lg"></i>
         </button>
+
+        <a href="{{ route('pengaturan.akun') }}" wire:navigate title="Pengaturan Akun" class="block shrink-0">
+            <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-100 dark:border-gray-700 shadow-sm hover:border-primary dark:hover:border-primary-light transition-colors bg-gray-50 dark:bg-gray-800">
+                @if(auth()->check() && auth()->user()->profile_photo)
+                    <img src="{{ asset('storage/' . auth()->user()->profile_photo) }}" alt="Profil" class="w-full h-full object-cover">
+                @else
+                    <div class="w-full h-full bg-primary/20 dark:bg-primary/30 text-primary dark:text-primary-light flex items-center justify-center font-bold text-sm">
+                        {{ substr(auth()->user()->name ?? 'U', 0, 1) }}
+                    </div>
+                @endif
+            </div>
+        </a>
 
     </div>
 
@@ -149,13 +161,10 @@
                 ],
                 
                 startRoutine() {
-                    // Muncul pertama kali setelah 2 detik halaman dimuat
                     setTimeout(() => {
                         this.showNextMessage();
                     }, 2000);
 
-                    // Siklus: Muncul setiap 5 detik 
-                    // (Logikanya: Tampil 4 detik, sembunyi 1 detik, lalu ganti pesan baru)
                     setInterval(() => {
                         this.showNextMessage();
                     }, 6000); 
@@ -163,14 +172,12 @@
                 
                 showNextMessage() {
                     this.currentMessage = this.messages[this.currentIndex];
-                    this.isVisible = true; // Slide masuk
+                    this.isVisible = true; 
                     
-                    // Sembunyikan otomatis setelah 4 detik
                     setTimeout(() => {
-                        this.isVisible = false; // Slide keluar
+                        this.isVisible = false; 
                     }, 4500);
 
-                    // Pindah ke pesan berikutnya
                     this.currentIndex = (this.currentIndex + 1) % this.messages.length;
                 }
             }));
