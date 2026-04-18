@@ -2,27 +2,22 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Http\Request;
 use App\Livewire\Auth\Login;
 use App\Livewire\Dashboard\SuperAdmin;
 use App\Livewire\SuperAdmin\KelolaUser;
 use App\Livewire\SuperAdmin\MasterUnit;
+use App\Livewire\SuperAdmin\PengaturanSistem;
 use App\Livewire\Dashboard\Admin;
 use App\Livewire\Dashboard\User;
 use App\Livewire\User\BuatPermohonan;
 use App\Livewire\User\RiwayatPermohonan;
 use App\Livewire\Admin\PermohonanMasuk;
 use App\Livewire\Admin\PekerjaanBerjalan;
-use Illuminate\Support\Facades\Artisan;
 use App\Livewire\Admin\RealisasiSelesai;
 use App\Livewire\Admin\PengaturanAkun;
-use App\Livewire\SuperAdmin\PengaturanSistem;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes UPBJ POLMED
-|--------------------------------------------------------------------------
-*/
 
 Route::get('/setup-storage', function () {
     Artisan::call('storage:link');

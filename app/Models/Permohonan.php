@@ -37,4 +37,9 @@ class Permohonan extends Model
     {
         return $this->belongsTo(Unit::class, 'unit_id');
     }
+
+    public function dokumenLampirans()
+    {
+        return $this->hasMany(DokumenLampiran::class, 'permohonan_id');
+    }
 }

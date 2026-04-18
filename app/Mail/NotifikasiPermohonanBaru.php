@@ -6,7 +6,7 @@ use App\Models\Permohonan;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Storage; // Wajib ditambahkan untuk mengambil file
+use Illuminate\Support\Facades\Storage;
 
 class NotifikasiPermohonanBaru extends Mailable
 {
@@ -16,23 +16,29 @@ class NotifikasiPermohonanBaru extends Mailable
 
     public function __construct(Permohonan $permohonan)
     {
-        $this->permohonan = $permohonan;
+        // Pastikan kita me-load relasi agar datanya lengkap saat di view
+        $this->permohonan = $permohonan->load(['user', 'unit', 'items', 'dokumenLampirans']);
     }
 
     public function build()
     {
-        // 1. Siapkan subject dan view email
-        $mail = $this->subject('Notifikasi: Permohonan Baru Masuk - UPBJ POLMED')
+        $mail = $this->subject('🔔 Notifikasi: Permohonan Baru - ' . $this->permohonan->unit->nama_unit)
                      ->view('emails.permohonan_baru');
 
-        // 2. Cek apakah permohonan ini punya file_pdf dan file-nya benar-benar ada di folder storage/public
-        if ($this->permohonan->file_pdf && Storage::disk('public')->exists($this->permohonan->file_pdf)) {
-            
-            // 3. Lampirkan file ke dalam email
-            $mail->attach(Storage::disk('public')->path($this->permohonan->file_pdf), [
-                'as' => 'Dokumen_Permohonan_REQ-' . str_pad($this->permohonan->id, 4, '0', STR_PAD_LEFT) . '.pdf',
-                'mime' => 'application/pdf',
-            ]);
+        // Logic melampirkan semua dokumen lampiran
+        foreach ($this->permohonan->dokumenLampirans as $doc) {
+            if (Storage::disk('public')->exists($doc->file_path)) {
+                
+                // Gunakan nama_dokumen jika ada, jika tidak gunakan nama default
+                $fileName = $doc->nama_dokumen 
+                            ? $doc->nama_dokumen . '.pdf' 
+                            : 'Lampiran_' . basename($doc->file_path);
+
+                $mail->attach(Storage::disk('public')->path($doc->file_path), [
+                    'as' => $fileName,
+                    'mime' => 'application/pdf',
+                ]);
+            }
         }
 
         return $mail;

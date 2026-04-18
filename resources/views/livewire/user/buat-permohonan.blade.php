@@ -44,66 +44,88 @@
                     @error('judul') <span class="text-red-500 text-xs mt-1.5 block font-medium">{{ $message }}</span> @enderror
                 </div>
 
-                <div>
+                <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Tanggal Surat <span class="text-red-500">*</span></label>
-                    <input type="date" wire:model="tanggal" class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 py-2.5 px-3.5 text-sm transition-colors shadow-sm">
+                    <input type="date" wire:model="tanggal" class="w-full sm:w-1/2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 py-2.5 px-3.5 text-sm transition-colors shadow-sm">
                     @error('tanggal') <span class="text-red-500 text-xs mt-1.5 block font-medium">{{ $message }}</span> @enderror
                 </div>
+            </div>
+        </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                        Dokumen Pendukung (PDF) 
-                        <span class="text-gray-400 font-normal text-xs ml-1">(Opsional)</span>
-                    </label>
-                    
-                    @if($file_pdf)
-                        <div class="flex items-center justify-between p-3.5 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
-                            <div class="flex items-center overflow-hidden">
-                                <i class="fa-solid fa-file-pdf text-red-500 text-xl mr-3 shrink-0"></i>
-                                <div class="truncate">
-                                    <p class="text-sm font-semibold text-purple-900 dark:text-purple-100 truncate">{{ $file_pdf->getClientOriginalName() }}</p>
-                                    <p class="text-xs text-purple-600 dark:text-purple-400">Siap untuk dikirim</p>
-                                </div>
-                            </div>
-                            <button type="button" wire:click="$set('file_pdf', null)" class="text-red-500 hover:text-red-700 p-2 shrink-0 transition-colors">
-                                <i class="fa-solid fa-xmark"></i>
-                            </button>
-                        </div>
-                    @elseif($existing_pdf)
-                        <div class="space-y-3">
-                            <div class="w-full h-48 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden relative group bg-gray-50 dark:bg-gray-800">
-                                <iframe src="{{ Storage::url($existing_pdf) }}" class="w-full h-full object-cover"></iframe>
-                                <div class="absolute inset-0 bg-gray-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                    <a href="{{ Storage::url($existing_pdf) }}" target="_blank" class="px-4 py-2 bg-white text-gray-900 rounded-lg text-sm font-medium shadow-sm hover:bg-gray-100 transition-colors">
-                                        <i class="fa-solid fa-arrow-up-right-from-square mr-1.5"></i> Buka Penuh
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
-                                <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
-                                    <i class="fa-solid fa-check-circle text-green-500 mr-2"></i> Dokumen tersimpan
-                                </div>
-                                <label class="cursor-pointer text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-700 hover:underline">
-                                    <input type="file" wire:model="file_pdf" accept="application/pdf" class="hidden">
-                                    Ganti Dokumen
-                                </label>
-                            </div>
-                        </div>
-                    @else
-                        <div class="relative w-full bg-gray-50 dark:bg-gray-800/50 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center p-3 hover:bg-purple-50 dark:hover:bg-purple-900/10 hover:border-purple-400 transition-colors cursor-pointer">
-                            <input type="file" wire:model="file_pdf" accept="application/pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                            <div class="flex items-center space-x-2 pointer-events-none text-gray-500 dark:text-gray-400">
-                                <i class="fa-solid fa-cloud-arrow-up text-purple-600 dark:text-purple-400 text-lg"></i>
-                                <span class="text-sm"><span class="font-semibold text-purple-600 dark:text-purple-400">Pilih File PDF</span> atau drag ke sini</span>
-                            </div>
-                        </div>
-                    @endif
-                    
-                    <div wire:loading wire:target="file_pdf" class="text-purple-600 text-xs mt-2 font-medium flex items-center">
-                        <i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Memproses dokumen...
+        <div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-800">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-4 border-b border-gray-100 dark:border-gray-800">
+                <div class="flex items-center mb-4 sm:mb-0">
+                    <div class="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center mr-3">
+                        <i class="fa-regular fa-folder-open"></i>
                     </div>
-                    @error('file_pdf') <span class="text-red-500 text-xs mt-1.5 block font-medium">{{ $message }}</span> @enderror
+                    <div>
+                        <h2 class="text-base font-semibold text-gray-900 dark:text-white">2. Dokumen Lampiran (PDF)</h2>
+                    </div>
                 </div>
+                
+                <button type="button" wire:click="addDokumen" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 text-sm font-medium rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors border border-purple-200 dark:border-purple-800/50">
+                    <i class="fa-solid fa-plus mr-2"></i> Tambah Dokumen Lain
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                @foreach($dokumens as $index => $dokumen)
+                    <div class="bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700 rounded-xl p-5 relative">
+                        <button type="button" wire:click="removeDokumen({{ $index }})" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors">
+                            <i class="fa-solid fa-xmark text-lg"></i>
+                        </button>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-start pr-8">
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">File Dokumen {{ $index + 1 }}</label>
+                                
+                                @if($dokumen['file'] || $dokumen['existing_path'])
+                                    <div class="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
+                                        <div class="flex items-center overflow-hidden">
+                                            <i class="fa-solid fa-file-pdf text-red-500 text-xl mr-3 shrink-0"></i>
+                                            <div class="truncate">
+                                                <p class="text-sm font-semibold text-purple-900 dark:text-purple-100 truncate">
+                                                    {{ $dokumen['file'] ? $dokumen['file']->getClientOriginalName() : 'Dokumen Tersimpan' }}
+                                                </p>
+                                                @if($dokumen['existing_path'] && !$dokumen['file'])
+                                                    <a href="{{ Storage::url($dokumen['existing_path']) }}" target="_blank" class="text-[11px] text-purple-600 hover:underline">Lihat File Lama</a>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <label class="cursor-pointer shrink-0 ml-2 text-xs font-medium text-purple-600 hover:text-purple-800">
+                                            <input type="file" wire:model="dokumens.{{ $index }}.file" accept="application/pdf" class="hidden">
+                                            Ganti File
+                                        </label>
+                                    </div>
+                                @else
+                                    <div class="relative w-full bg-white dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center p-3 hover:bg-purple-50 dark:hover:bg-purple-900/10 hover:border-purple-400 transition-colors cursor-pointer">
+                                        <input type="file" wire:model="dokumens.{{ $index }}.file" accept="application/pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                                        <div class="flex items-center space-x-2 pointer-events-none text-gray-500 dark:text-gray-400">
+                                            <i class="fa-solid fa-cloud-arrow-up text-purple-600 dark:text-purple-400 text-lg"></i>
+                                            <span class="text-sm">Pilih File PDF</span>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                <div wire:loading wire:target="dokumens.{{ $index }}.file" class="text-purple-600 text-xs mt-2 font-medium flex items-center">
+                                    <i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Mengunggah...
+                                </div>
+                                @error("dokumens.$index.file") <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nama Dokumen <span class="text-gray-400 font-normal text-xs">(Opsional)</span></label>
+                                <input type="text" wire:model="dokumens.{{ $index }}.nama_dokumen" class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 px-3.5 py-2.5 text-sm shadow-sm" placeholder="Misal: Spesifikasi Teknis Komputer" {{ !($dokumen['file'] || $dokumen['existing_path']) ? 'disabled' : '' }}>
+                                @if(!($dokumen['file'] || $dokumen['existing_path']))
+                                    <p class="text-[11px] text-gray-400 mt-1"><i class="fa-solid fa-info-circle"></i> Upload file terlebih dahulu untuk memberi nama.</p>
+                                @endif
+                                @error("dokumens.$index.nama_dokumen") <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            </div>
+
+                        </div>
+                    </div>
+                @endforeach
             </div>
         </div>
 
@@ -114,7 +136,7 @@
                         <i class="fa-solid fa-boxes-packing"></i>
                     </div>
                     <div>
-                        <h2 class="text-base font-semibold text-gray-900 dark:text-white">2. Rincian Barang / Jasa</h2>
+                        <h2 class="text-base font-semibold text-gray-900 dark:text-white">3. Rincian Barang / Jasa</h2>
                     </div>
                 </div>
                 

@@ -1,215 +1,208 @@
 <div>
-    <div class="bg-white dark:bg-gray-800/90 backdrop-blur-xl rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 dark:border-gray-700 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between relative overflow-hidden group">
-        
-        <div class="absolute -right-20 -top-20 w-64 h-64 bg-purple-500/10 dark:bg-purple-500/20 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-110"></div>
-        <div class="absolute -left-20 -bottom-20 w-64 h-64 bg-blue-500/10 dark:bg-blue-500/20 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-110"></div>
-
-        <div class="relative z-10">
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
-                Selamat Datang, 
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-500 dark:from-purple-400 dark:to-indigo-300">
-                    {{ auth()->user()->name ?? 'Super Admin' }}
-                </span>! 👋
-            </h1>
-            <p class="text-sm sm:text-base text-gray-900 dark:text-gray-300 max-w-xl leading-relaxed mt-1">
-                Anda masuk sebagai <span class="font-bold text-purple-600 dark:text-purple-400">Super Admin</span>. Pantau dan kelola seluruh pengguna serta unit sistem dengan mudah hari ini.
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                {{ $this->greeting }}, {{ explode(' ', auth()->user()->name ?? 'Super Admin')[0] }}
+            </h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-2">
+                <i class="fa-regular fa-clock"></i> {{ $this->currentDate }}
             </p>
         </div>
 
-        <div class="hidden sm:flex relative z-10 mt-4 sm:mt-0 items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 rounded-2xl border border-purple-100 dark:border-gray-600 shadow-inner group-hover:rotate-6 transition-transform duration-300">
-            <i class="fa-solid fa-shield-halved text-2xl text-purple-600 dark:text-purple-400"></i>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
-            <div class="flex justify-between items-start mb-6">
-                <div class="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                    <i class="fa-solid fa-users text-xl"></i>
-                </div>
-                <span class="flex items-center text-xs font-semibold text-green-600 bg-green-50 dark:bg-green-900/30 dark:text-green-400 px-3 py-1.5 rounded-full shadow-sm">
-                    <i class="fa-solid fa-arrow-trend-up mr-1.5"></i> +12%
-                </span>
-            </div>
-            <div>
-                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Total Pengguna</p>
-                <div class="flex items-baseline gap-2">
-                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white">45</h3>
-                    <span class="text-sm text-gray-400 font-medium">Akun</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
-            <div class="flex justify-between items-start mb-6">
-                <div class="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                    <i class="fa-solid fa-sitemap text-xl"></i>
-                </div>
-                <span class="flex items-center text-xs font-semibold text-gray-600 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 px-3 py-1.5 rounded-full shadow-sm">
-                    Tetap
-                </span>
-            </div>
-            <div>
-                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Total Unit Terdaftar</p>
-                <div class="flex items-baseline gap-2">
-                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white">12</h3>
-                    <span class="text-sm text-gray-400 font-medium">Divisi</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-3xl p-6 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
-            <div class="absolute right-0 bottom-0 opacity-20 pointer-events-none">
-                <i class="fa-solid fa-server text-8xl -mr-4 -mb-4 text-white"></i>
-            </div>
-            <div class="flex justify-between items-start mb-6 relative z-10">
-                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white group-hover:scale-110 group-hover:-rotate-3 transition-all duration-300 border border-white/20">
-                    <i class="fa-solid fa-server text-xl"></i>
-                </div>
-                <div class="flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20">
-                    <span class="relative flex h-2.5 w-2.5">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-100 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
-                    </span>
-                    <span class="text-xs font-bold text-white">Normal</span>
-                </div>
-            </div>
-            <div class="relative z-10">
-                <p class="text-sm font-medium text-emerald-50 mb-1">Status Server</p>
-                <h3 class="text-3xl font-bold text-white tracking-tight">Online</h3>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        
-        <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-            <div class="flex justify-between items-center mb-4">
-                <div>
-                    <h2 class="text-lg font-bold text-gray-900 dark:text-white">Aktivitas Sistem</h2>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Statistik login pengguna 7 hari terakhir</p>
-                </div>
-                <button class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 rounded-xl transition-colors">
-                    Minggu Ini <i class="fa-solid fa-chevron-down ml-1 text-xs"></i>
-                </button>
-            </div>
-            <div id="areaChart" class="w-full h-[300px]"></div>
-        </div>
-
-        <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-            <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-1">Distribusi Unit</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Persentase pengguna per divisi</p>
+        <div class="flex items-center gap-3 bg-white dark:bg-card-dark p-2 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 relative">
             
-            <div id="donutChart" class="flex justify-center h-[280px]"></div>
+            <div wire:loading wire:target="filterBulan, filterTahun" class="absolute -top-2 -right-2">
+                <span class="relative flex h-3 w-3">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                </span>
+            </div>
+
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                    <i class="fa-regular fa-calendar-days"></i>
+                </div>
+                <select wire:model.live="filterBulan" class="bg-gray-50 dark:bg-gray-900 border-none text-gray-900 dark:text-gray-100 text-sm rounded-xl focus:ring-primary block pl-9 p-2.5 w-32 cursor-pointer font-medium transition-colors">
+                    <option value="01">Januari</option>
+                    <option value="02">Februari</option>
+                    <option value="03">Maret</option>
+                    <option value="04">April</option>
+                    <option value="05">Mei</option>
+                    <option value="06">Juni</option>
+                    <option value="07">Juli</option>
+                    <option value="08">Agustus</option>
+                    <option value="09">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </select>
+            </div>
+            
+            <div class="w-px h-6 bg-gray-200 dark:bg-gray-700"></div>
+
+            <select wire:model.live="filterTahun" class="bg-transparent border-none text-gray-900 dark:text-gray-100 text-sm rounded-xl focus:ring-primary block p-2.5 cursor-pointer font-medium transition-colors">
+                @foreach($availableYears as $year)
+                    <option value="{{ $year }}">{{ $year }}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        
+        <div class="bg-white dark:bg-card-dark rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm relative overflow-hidden group transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-xl hover:shadow-blue-500/10 dark:hover:shadow-blue-500/10 hover:border-blue-200 dark:hover:border-blue-800/50">
+            <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-blue-50 dark:bg-blue-900/20 rounded-full blur-2xl transition-transform duration-500 group-hover:scale-150"></div>
+            <div class="relative z-10 flex justify-between items-start">
+                <div>
+                    <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-1">Total Pengguna</p>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($totalUsers) }}</h3>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl shadow-inner transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+            </div>
+            <div class="mt-4 relative z-10">
+                <a href="{{ route('users.index') }}" wire:navigate class="text-xs font-semibold text-blue-600 hover:text-blue-800 dark:text-blue-400 flex items-center gap-1 transition-all group-hover:gap-2">
+                    Kelola Pengguna <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
         </div>
 
+        <div class="bg-white dark:bg-card-dark rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm relative overflow-hidden group transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-xl hover:shadow-purple-500/10 dark:hover:shadow-purple-500/10 hover:border-purple-200 dark:hover:border-purple-800/50">
+            <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-purple-50 dark:bg-purple-900/20 rounded-full blur-2xl transition-transform duration-500 group-hover:scale-150"></div>
+            <div class="relative z-10 flex justify-between items-start">
+                <div>
+                    <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-1">Unit Terdaftar</p>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($totalUnits) }}</h3>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl shadow-inner transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3">
+                    <i class="fa-solid fa-sitemap"></i>
+                </div>
+            </div>
+            <div class="mt-4 relative z-10">
+                <a href="{{ route('unit.index') }}" wire:navigate class="text-xs font-semibold text-purple-600 hover:text-purple-800 dark:text-purple-400 flex items-center gap-1 transition-all group-hover:gap-2">
+                    Master Unit <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-card-dark rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm relative overflow-hidden group transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-xl hover:shadow-primary/10 dark:hover:shadow-primary/10 hover:border-primary/30 dark:hover:border-primary/50">
+            <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-primary/10 dark:bg-primary/5 rounded-full blur-2xl transition-transform duration-500 group-hover:scale-150"></div>
+            <div class="relative z-10 flex justify-between items-start">
+                <div>
+                    <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-1">Siklus Bulan Ini</p>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white transition-opacity duration-200" 
+                        wire:loading.class="opacity-50" 
+                        wire:target="filterBulan, filterTahun">
+                        {{ number_format($totalPermohonan) }}
+                    </h3>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-primary/20 dark:bg-primary/20 text-primary dark:text-primary-light flex items-center justify-center text-xl shadow-inner transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
+                    <i class="fa-solid fa-file-contract"></i>
+                </div>
+            </div>
+            <div class="mt-4 relative z-10">
+                <p class="text-xs text-gray-500 dark:text-gray-400 transition-colors group-hover:text-primary/70 dark:group-hover:text-primary-light/70">
+                    <span wire:loading.remove wire:target="filterBulan, filterTahun">Total data berdasarkan filter</span>
+                    <span wire:loading wire:target="filterBulan, filterTahun" class="text-primary animate-pulse">Memuat data...</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-card-dark rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm relative overflow-hidden group transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/10 hover:border-emerald-200 dark:hover:border-emerald-800/50">
+            <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-emerald-50 dark:bg-emerald-900/20 rounded-full blur-2xl transition-transform duration-500 group-hover:scale-150"></div>
+            <div class="relative z-10">
+                <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-4">Sistem Notifikasi</p>
+                
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between group/item">
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                            <i class="fa-solid fa-envelope w-4 text-gray-400 group-hover/item:text-emerald-500 transition-colors"></i> Email SMTP
+                        </span>
+                        @if($isEmailActive)
+                            <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-md dark:bg-emerald-900/30 dark:text-emerald-400">AKTIF</span>
+                        @else
+                            <span class="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded-md dark:bg-gray-800 dark:text-gray-400">NONAKTIF</span>
+                        @endif
+                    </div>
+                    <div class="flex items-center justify-between group/item">
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                            <i class="fa-brands fa-whatsapp w-4 text-gray-400 group-hover/item:text-emerald-500 transition-colors"></i> WhatsApp API
+                        </span>
+                        @if($isWaActive)
+                            <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-md dark:bg-emerald-900/30 dark:text-emerald-400">AKTIF</span>
+                        @else
+                            <span class="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded-md dark:bg-gray-800 dark:text-gray-400">NONAKTIF</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 relative z-10">
+                <a href="{{ route('pengaturan_sistem') }}" wire:navigate class="text-xs font-semibold text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 flex items-center gap-1 transition-all group-hover:gap-2">
+                    Konfigurasi <i class="fa-solid fa-gear transition-transform group-hover:rotate-90"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-card-dark rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
+        <div class="p-6 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-user-clock text-primary"></i> Pengguna Baru Mendaftar
+            </h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50/50 dark:bg-gray-800/50 dark:text-gray-400">
+                    <tr>
+                        <th class="px-6 py-4 font-semibold">User</th>
+                        <th class="px-6 py-4 font-semibold">Unit</th>
+                        <th class="px-6 py-4 font-semibold">Role</th>
+                        <th class="px-6 py-4 font-semibold text-right">Terdaftar Pada</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                    @forelse($recentUsers as $user)
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shadow-inner">
+                                    {{ substr($user->name, 0, 1) }}
+                                </div>
+                                <div>
+                                    <div class="font-medium text-gray-900 dark:text-white">{{ $user->name }}</div>
+                                    <div class="text-xs text-gray-500">{{ $user->email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-200">
+                            {{ $user->unit ?? '-' }}
+                        </td>
+                        <td class="px-6 py-4">
+                            @if($user->role === 'super_admin')
+                                <span class="bg-purple-100 text-purple-800 text-xs font-semibold px-2.5 py-1 rounded-md dark:bg-purple-900/30 dark:text-purple-400">Super Admin</span>
+                            @elseif($user->role === 'admin')
+                                <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded-md dark:bg-blue-900/30 dark:text-blue-400">Admin UPBJ</span>
+                            @else
+                                <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-1 rounded-md dark:bg-emerald-900/30 dark:text-emerald-400">User Unit</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 text-right text-gray-500 dark:text-gray-400">
+                            {{ \Carbon\Carbon::parse($user->created_at)->diffForHumans() }}
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                            <div class="flex flex-col items-center justify-center">
+                                <i class="fa-solid fa-users-slash text-3xl text-gray-300 dark:text-gray-600 mb-3"></i>
+                                <p>Belum ada pengguna terdaftar.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Cek apakah dark mode aktif (opsional, untuk menyesuaikan warna teks chart)
-        const isDarkMode = document.documentElement.classList.contains('dark');
-        const textColor = isDarkMode ? '#9ca3af' : '#6b7280';
-
-        // 1. KONFIGURASI AREA CHART (Aktivitas Sistem)
-        var areaOptions = {
-            series: [{
-                name: 'Pengguna Aktif',
-                data: [31, 40, 28, 51, 42, 109, 100]
-            }],
-            chart: {
-                height: 300,
-                type: 'area',
-                fontFamily: 'inherit',
-                toolbar: { show: false },
-                zoom: { enabled: false }
-            },
-            colors: ['#8b5cf6'], // Warna Purple Tailwind
-            dataLabels: { enabled: false },
-            stroke: {
-                curve: 'smooth',
-                width: 3
-            },
-            fill: {
-                type: 'gradient',
-                gradient: {
-                    shadeIntensity: 1,
-                    opacityFrom: 0.4,
-                    opacityTo: 0.05,
-                    stops: [0, 90, 100]
-                }
-            },
-            xaxis: {
-                categories: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
-                axisBorder: { show: false },
-                axisTicks: { show: false },
-                labels: {
-                    style: { colors: textColor }
-                }
-            },
-            yaxis: {
-                labels: {
-                    style: { colors: textColor }
-                }
-            },
-            grid: {
-                borderColor: isDarkMode ? '#374151' : '#f3f4f6',
-                strokeDashArray: 4, // Garis putus-putus biar elegan
-                yaxis: { lines: { show: true } },
-                xaxis: { lines: { show: false } },
-            },
-            tooltip: { theme: isDarkMode ? 'dark' : 'light' }
-        };
-
-        var areaChart = new ApexCharts(document.querySelector("#areaChart"), areaOptions);
-        areaChart.render();
-
-        // 2. KONFIGURASI DONUT CHART (Distribusi Unit)
-        var donutOptions = {
-            series: [44, 55, 13, 33],
-            chart: {
-                type: 'donut',
-                height: 300,
-                fontFamily: 'inherit',
-            },
-            labels: ['IT Support', 'Keuangan', 'HRD', 'Operasional'],
-            colors: ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b'], // Purple, Blue, Emerald, Amber
-            plotOptions: {
-                pie: {
-                    donut: {
-                        size: '75%',
-                        labels: {
-                            show: true,
-                            name: { show: true },
-                            value: {
-                                show: true,
-                                color: isDarkMode ? '#f9fafb' : '#111827',
-                                fontSize: '24px',
-                                fontWeight: 700,
-                            },
-                            total: {
-                                show: true,
-                                showAlways: true,
-                                label: 'Total',
-                                color: textColor
-                            }
-                        }
-                    }
-                }
-            },
-            dataLabels: { enabled: false },
-            stroke: {
-                width: 0 // Hilangkan garis border antar potongan kue
-            },
-            legend: {
-                position: 'bottom',
-                labels: { colors: textColor }
-            },
-            tooltip: { theme: isDarkMode ? 'dark' : 'light' }
-        };
-
-        var donutChart = new ApexCharts(document.querySelector("#donutChart"), donutOptions);
-        donutChart.render();
-    });
-</script>

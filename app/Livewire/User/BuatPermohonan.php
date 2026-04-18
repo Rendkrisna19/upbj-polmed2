@@ -4,6 +4,7 @@ namespace App\Livewire\User;
 
 use App\Models\Permohonan;
 use App\Models\ItemPermohonan;
+use App\Models\DokumenLampiran; 
 use App\Models\Unit;
 use App\Models\Setting; 
 use App\Models\User;    
@@ -25,15 +26,17 @@ class BuatPermohonan extends Component
     public $permohonan_id; 
     public $judul;
     public $tanggal;
-    public $file_pdf;
-    public $existing_pdf; 
 
+    // State untuk Multi-Dokumen dan Multi-Item
+    public $dokumens = [];
+    public $deleted_dokumens = []; // Untuk menampung ID dokumen lama yang dihapus saat Edit
     public $items = [];
 
     public function mount($id = null)
     {
         if ($id) {
-            $permohonan = Permohonan::with('items')
+            // Mode EDIT: Panggil relasi items dan dokumenLampirans
+            $permohonan = Permohonan::with(['items', 'dokumenLampirans'])
                 ->where('id', $id)
                 ->where('user_id', auth()->id())
                 ->where('status', 'Baru') 
@@ -42,20 +45,33 @@ class BuatPermohonan extends Component
             $this->permohonan_id = $permohonan->id;
             $this->judul = $permohonan->judul;
             $this->tanggal = $permohonan->tanggal;
-            $this->existing_pdf = $permohonan->file_pdf;
 
+            // Load Items
             foreach ($permohonan->items as $item) {
                 $this->items[] = [
                     'nama_item' => $item->nama_item,
                     'jumlah' => $item->jumlah
                 ];
             }
+
+            // Load Dokumen Lampiran
+            foreach ($permohonan->dokumenLampirans as $doc) {
+                $this->dokumens[] = [
+                    'existing_id'   => $doc->id,
+                    'existing_path' => $doc->file_path,
+                    'file'          => null,
+                    'nama_dokumen'  => $doc->nama_dokumen,
+                ];
+            }
         } else {
+            // Mode CREATE: Siapkan 1 baris kosong untuk Item & Dokumen
             $this->tanggal = date('Y-m-d');
             $this->items[] = ['nama_item' => '', 'jumlah' => 1];
+            $this->dokumens[] = ['existing_id' => null, 'existing_path' => null, 'file' => null, 'nama_dokumen' => ''];
         }
     }
 
+    // --- FUNGSI MANAJEMEN ITEM ---
     public function addItem()
     {
         $this->items[] = ['nama_item' => '', 'jumlah' => 1];
@@ -67,16 +83,36 @@ class BuatPermohonan extends Component
         $this->items = array_values($this->items);
     }
 
+    // --- FUNGSI MANAJEMEN DOKUMEN ---
+    public function addDokumen()
+    {
+        $this->dokumens[] = ['existing_id' => null, 'existing_path' => null, 'file' => null, 'nama_dokumen' => ''];
+    }
+
+    public function removeDokumen($index)
+    {
+        // Jika dokumen yang dihapus adalah dokumen yang sudah ada di database, simpan ID-nya
+        if (!empty($this->dokumens[$index]['existing_id'])) {
+            $this->deleted_dokumens[] = $this->dokumens[$index]['existing_id'];
+        }
+        unset($this->dokumens[$index]);
+        $this->dokumens = array_values($this->dokumens);
+    }
+
     public function store()
     {
-        // Ubah validasi file menjadi nullable (Tidak wajib)
         $this->validate([
             'judul' => 'required|string|max:255',
             'tanggal' => 'required|date',
-            'file_pdf' => 'nullable|mimes:pdf|max:2048', // Opsional
+            
+            // Validasi Array Items
             'items' => 'required|array|min:1',
             'items.*.nama_item' => 'required|string|max:255',
             'items.*.jumlah' => 'required|integer|min:1',
+            
+            // Validasi Array Dokumen (Opsional, tapi jika diisi harus PDF)
+            'dokumens.*.file' => 'nullable|mimes:pdf|max:2048',
+            'dokumens.*.nama_dokumen' => 'nullable|string|max:255',
         ]);
 
         DB::beginTransaction();
@@ -84,43 +120,40 @@ class BuatPermohonan extends Component
         try {
             $unit = Unit::where('nama_unit', auth()->user()->unit)->first();
             $unitId = $unit ? $unit->id : 1;
-            
             $isBaru = false; 
 
             if ($this->permohonan_id) {
-                // UPDATE DATA
+                // 1. UPDATE PERMOHONAN
                 $permohonan = Permohonan::find($this->permohonan_id);
                 $permohonan->judul = $this->judul;
                 $permohonan->tanggal = $this->tanggal;
-
-                // Jika user mengunggah file baru, hapus yang lama & timpa
-                if ($this->file_pdf) {
-                    if ($permohonan->file_pdf) {
-                        Storage::disk('public')->delete($permohonan->file_pdf);
-                    }
-                    $permohonan->file_pdf = $this->file_pdf->store('dokumen_permohonan', 'public');
-                }
                 $permohonan->save();
 
+                // 2. HAPUS & RE-CREATE ITEMS
                 $permohonan->items()->delete();
 
-            } else {
-                // CREATE DATA BARU
-                // Jika user mengunggah file, simpan pathnya, jika tidak, biarkan null
-                $filePath = $this->file_pdf ? $this->file_pdf->store('dokumen_permohonan', 'public') : null;
+                // 3. PROSES DOKUMEN YANG DIHAPUS USER
+                foreach ($this->deleted_dokumens as $del_id) {
+                    $doc = DokumenLampiran::find($del_id);
+                    if ($doc) {
+                        Storage::disk('public')->delete($doc->file_path); // Hapus file fisik
+                        $doc->delete(); // Hapus data di DB
+                    }
+                }
 
+            } else {
+                // 1. CREATE PERMOHONAN BARU
                 $permohonan = Permohonan::create([
                     'user_id' => auth()->id(),
                     'unit_id' => $unitId,
                     'judul' => $this->judul,
                     'tanggal' => $this->tanggal,
-                    'file_pdf' => $filePath,
                     'status' => 'Baru',
                 ]);
-                
                 $isBaru = true; 
             }
 
+            // SIMPAN SEMUA ITEM
             foreach ($this->items as $item) {
                 ItemPermohonan::create([
                     'permohonan_id' => $permohonan->id,
@@ -129,19 +162,45 @@ class BuatPermohonan extends Component
                 ]);
             }
 
+            // SIMPAN SEMUA DOKUMEN LAMPIRAN
+            foreach ($this->dokumens as $docData) {
+                // Jika ada file baru yang diunggah
+                if ($docData['file']) {
+                    $path = $docData['file']->store('dokumen_permohonan', 'public');
+                    
+                    if ($docData['existing_id']) {
+                        // Timpa file lama dengan file baru
+                        $doc = DokumenLampiran::find($docData['existing_id']);
+                        Storage::disk('public')->delete($doc->file_path);
+                        $doc->update([
+                            'file_path' => $path, 
+                            'nama_dokumen' => $docData['nama_dokumen']
+                        ]);
+                    } else {
+                        // Buat data dokumen baru
+                        DokumenLampiran::create([
+                            'permohonan_id' => $permohonan->id,
+                            'file_path' => $path,
+                            'nama_dokumen' => $docData['nama_dokumen']
+                        ]);
+                    }
+                } else if ($docData['existing_id']) {
+                    // Jika tidak ada file baru, tapi nama dokumen diubah
+                    DokumenLampiran::where('id', $docData['existing_id'])
+                        ->update(['nama_dokumen' => $docData['nama_dokumen']]);
+                }
+            }
+
             DB::commit();
 
             // PENGIRIMAN NOTIFIKASI EMAIL
-            if ($isBaru) {
-                if (Setting::get('is_email_active', true)) {
-                    $adminEmails = User::where('role', 'admin')->pluck('email')->toArray();
-                    
-                    if (!empty($adminEmails)) {
-                        try {
-                            Mail::to($adminEmails)->send(new NotifikasiPermohonanBaru($permohonan));
-                        } catch (\Exception $e) {
-                            // Abaikan error email
-                        }
+            if ($isBaru && Setting::get('is_email_active', true)) {
+                $adminEmails = User::where('role', 'admin')->pluck('email')->toArray();
+                if (!empty($adminEmails)) {
+                    try {
+                        Mail::to($adminEmails)->send(new NotifikasiPermohonanBaru($permohonan));
+                    } catch (\Exception $e) {
+                        // Abaikan error email
                     }
                 }
             }
