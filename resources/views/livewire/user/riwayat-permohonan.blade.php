@@ -1,14 +1,14 @@
 <div class="w-full pb-8">
     <style>
         .pagination-custom nav span[aria-current="page"] > span {
-            background-color: #9333ea !important; /* text-purple-600 */
+            background-color: #9333ea !important; 
             border-color: #9333ea !important;
             color: white !important;
         }
         .pagination-custom nav a:hover {
-            background-color: #faf5ff !important; /* bg-purple-50 */
-            color: #7e22ce !important; /* text-purple-700 */
-            border-color: #d8b4fe !important; /* border-purple-300 */
+            background-color: #faf5ff !important; 
+            color: #7e22ce !important; 
+            border-color: #d8b4fe !important; 
         }
     </style>
 
@@ -17,8 +17,35 @@
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Pantau perkembangan status permohonan pengadaan barang/jasa dari unit Anda.</p>
     </div>
 
-    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+        <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col items-center justify-center text-center">
+            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">Total</p>
+            <h3 class="text-2xl font-bold text-purple-600 dark:text-purple-400" wire:loading.class="opacity-50" wire:target="search, monthFilter, yearFilter, statusFilter">{{ $stats['total'] }}</h3>
+        </div>
+        <div class="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-xl border border-blue-100 dark:border-blue-900/30 flex flex-col items-center justify-center text-center">
+            <p class="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-1 uppercase tracking-wider">Baru</p>
+            <h3 class="text-2xl font-bold text-blue-700 dark:text-blue-300" wire:loading.class="opacity-50" wire:target="search, monthFilter, yearFilter, statusFilter">{{ $stats['baru'] }}</h3>
+        </div>
+        <div class="bg-orange-50 dark:bg-orange-900/10 p-4 rounded-xl border border-orange-100 dark:border-orange-900/30 flex flex-col items-center justify-center text-center">
+            <p class="text-xs font-semibold text-orange-600 dark:text-orange-400 mb-1 uppercase tracking-wider">Diproses</p>
+            <h3 class="text-2xl font-bold text-orange-700 dark:text-orange-300" wire:loading.class="opacity-50" wire:target="search, monthFilter, yearFilter, statusFilter">{{ $stats['proses'] }}</h3>
+        </div>
+        <div class="bg-emerald-50 dark:bg-emerald-900/10 p-4 rounded-xl border border-emerald-100 dark:border-emerald-900/30 flex flex-col items-center justify-center text-center">
+            <p class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-1 uppercase tracking-wider">Selesai</p>
+            <h3 class="text-2xl font-bold text-emerald-700 dark:text-emerald-300" wire:loading.class="opacity-50" wire:target="search, monthFilter, yearFilter, statusFilter">{{ $stats['selesai'] }}</h3>
+        </div>
+        <div class="bg-red-50 dark:bg-red-900/10 p-4 rounded-xl border border-red-100 dark:border-red-900/30 flex flex-col items-center justify-center text-center col-span-2 md:col-span-1">
+            <p class="text-xs font-semibold text-red-600 dark:text-red-400 mb-1 uppercase tracking-wider">Ditolak</p>
+            <h3 class="text-2xl font-bold text-red-700 dark:text-red-300" wire:loading.class="opacity-50" wire:target="search, monthFilter, yearFilter, statusFilter">{{ $stats['ditolak'] }}</h3>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden relative">
         
+        <div wire:loading.flex wire:target="search, statusFilter, monthFilter, yearFilter, perPage" class="absolute inset-0 z-10 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm items-center justify-center">
+            <div class="w-8 h-8 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+        </div>
+
         <div class="p-5 border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20 space-y-4 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:justify-between gap-4">
             
             <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto flex-grow">
@@ -125,7 +152,7 @@
                                         <button type="button" @click="
                                             Swal.fire({
                                                 title: 'Batalkan Pengajuan?',
-                                                text: 'Permohonan ini akan dihapus secara permanen.',
+                                                text: 'Permohonan beserta semua file lampiran akan dihapus permanen.',
                                                 icon: 'warning',
                                                 showCancelButton: true,
                                                 confirmButtonColor: '#dc2626',
@@ -153,7 +180,7 @@
                                         <i class="fa-solid fa-folder-open text-2xl"></i>
                                     </div>
                                     <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-1">Belum Ada Permohonan</h3>
-                                    <p class="text-sm text-gray-500">Anda belum membuat permohonan atau data tidak ditemukan.</p>
+                                    <p class="text-sm text-gray-500">Data tidak ditemukan atau Anda belum membuat permohonan.</p>
                                     <a href="{{ route('user.buat_permohonan') }}" wire:navigate class="mt-4 px-5 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors shadow-sm">
                                         Buat Permohonan Baru
                                     </a>
@@ -174,7 +201,7 @@
 
     @if($isModalOpen && $selectedData)
         <div class="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto overflow-x-hidden bg-gray-900/60 backdrop-blur-sm p-4 transition-all" x-data x-transition>
-            <div class="relative w-full max-w-3xl bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-gray-200 dark:border-gray-800">
+            <div class="relative w-full max-w-4xl bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-gray-200 dark:border-gray-800">
                 
                 <div class="flex justify-between items-center p-5 border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30">
                     <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center">
@@ -190,63 +217,80 @@
 
                 <div class="p-6 overflow-y-auto">
                     <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5 mb-6 border border-gray-200 dark:border-gray-700">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="md:col-span-2">
                                 <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 font-semibold uppercase tracking-wider">Judul Permohonan</p>
                                 <p class="font-medium text-gray-900 dark:text-white text-sm">{{ $selectedData->judul }}</p>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 font-semibold uppercase tracking-wider">Tanggal Pengajuan</p>
-                                <p class="font-medium text-gray-900 dark:text-white text-sm flex items-center"><i class="fa-regular fa-calendar text-gray-400 mr-2"></i> {{ \Carbon\Carbon::parse($selectedData->tanggal)->translatedFormat('l, d F Y') }}</p>
-                            </div>
-                            <div>
                                 <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 font-semibold uppercase tracking-wider">Status Saat Ini</p>
                                 @if($selectedData->status == 'Baru')
-                                    <span class="inline-flex px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800">Baru Masuk</span>
+                                    <span class="inline-flex px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200 dark:bg-blue-900/30 dark:text-blue-400">Baru Masuk</span>
                                 @elseif($selectedData->status == 'Proses')
-                                    <span class="inline-flex px-2.5 py-1 rounded-full bg-orange-50 text-orange-700 text-xs font-semibold border border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800">Sedang Diproses</span>
+                                    <span class="inline-flex px-2.5 py-1 rounded-full bg-orange-50 text-orange-700 text-xs font-semibold border border-orange-200 dark:bg-orange-900/30 dark:text-orange-400">Sedang Diproses</span>
                                 @elseif($selectedData->status == 'Selesai')
-                                    <span class="inline-flex px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800">Selesai / Terealisasi</span>
-                                @endif
-                            </div>
-                            <div>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 font-semibold uppercase tracking-wider">Dokumen Lampiran</p>
-                                @if($selectedData->file_pdf)
-                                    <button wire:click="openPdfPreview('{{ $selectedData->file_pdf }}')" class="inline-flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 text-xs font-semibold rounded-lg transition-colors border border-gray-300 dark:border-gray-600 shadow-sm">
-                                        <i class="fa-solid fa-file-pdf text-red-500 mr-2 text-sm"></i> Preview PDF
-                                    </button>
+                                    <span class="inline-flex px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400">Selesai / Terealisasi</span>
                                 @else
-                                    <span class="text-sm text-gray-500 italic">Tidak ada dokumen PDF</span>
+                                    <span class="inline-flex px-2.5 py-1 rounded-full bg-red-50 text-red-700 text-xs font-semibold border border-red-200 dark:bg-red-900/30 dark:text-red-400">Ditolak</span>
                                 @endif
                             </div>
                         </div>
                     </div>
 
-                    <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 uppercase tracking-wide flex items-center">
-                        Rincian Barang <span class="ml-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded text-xs">{{ $selectedData->items->count() }} Item</span>
-                    </h4>
-                    
-                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                        <table class="w-full text-sm text-left">
-                            <thead class="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 uppercase tracking-wide border-b border-gray-200 dark:border-gray-700">
-                                <tr>
-                                    <th class="px-5 py-3 font-semibold w-12 text-center">No</th>
-                                    <th class="px-5 py-3 font-semibold">Nama Barang / Jasa</th>
-                                    <th class="px-5 py-3 font-semibold text-center w-28">Kuantitas</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-900">
-                                @foreach($selectedData->items as $index => $item)
-                                    <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-800/30">
-                                        <td class="px-5 py-3 text-center text-gray-500">{{ $index + 1 }}</td>
-                                        <td class="px-5 py-3 font-medium text-gray-900 dark:text-white">{{ $item->nama_item }}</td>
-                                        <td class="px-5 py-3 text-center text-gray-900 dark:text-white">
-                                            {{ $item->jumlah }} Unit
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
+                                <i class="fa-solid fa-boxes-packing text-gray-400 mr-2"></i> Rincian Barang
+                                <span class="ml-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded text-xs">{{ $selectedData->items->count() }}</span>
+                            </h4>
+                            <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                                <table class="w-full text-sm text-left">
+                                    <thead class="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 uppercase tracking-wide border-b border-gray-200 dark:border-gray-700">
+                                        <tr>
+                                            <th class="px-4 py-3 font-semibold">Nama Item</th>
+                                            <th class="px-4 py-3 font-semibold text-center w-24">Jml</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-900">
+                                        @foreach($selectedData->items as $item)
+                                            <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-800/30">
+                                                <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">{{ $item->nama_item }}</td>
+                                                <td class="px-4 py-3 text-center text-gray-900 dark:text-white">{{ $item->jumlah }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
+                                <i class="fa-solid fa-paperclip text-gray-400 mr-2"></i> Dokumen Lampiran
+                                <span class="ml-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded text-xs">{{ $selectedData->dokumenLampirans->count() }}</span>
+                            </h4>
+                            
+                            <div class="space-y-3">
+                                @forelse($selectedData->dokumenLampirans as $doc)
+                                    <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
+                                        <div class="flex items-center overflow-hidden">
+                                            <i class="fa-solid fa-file-pdf text-red-500 text-xl mr-3 shrink-0"></i>
+                                            <div class="truncate">
+                                                <p class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                                                    {{ $doc->nama_dokumen ?: 'Dokumen ' . $loop->iteration }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <button wire:click="openPdfPreview('{{ $doc->file_path }}')" class="shrink-0 ml-3 text-xs font-semibold text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-300 bg-purple-50 dark:bg-purple-900/30 hover:bg-purple-100 px-3 py-1.5 rounded-lg transition-colors">
+                                            Lihat PDF
+                                        </button>
+                                    </div>
+                                @empty
+                                    <div class="text-center p-4 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Tidak ada dokumen yang dilampirkan.</p>
+                                    </div>
+                                @endforelse
+                            </div>
+                        </div>
                     </div>
                 </div>
 

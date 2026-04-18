@@ -28,7 +28,6 @@ class PermohonanMasuk extends Component
     public $isPdfModalOpen = false;
     public $previewPdfUrl = null;
 
-    // Reset pagination ketika filter diubah
     public function updatingSearch() { $this->resetPage(); }
     public function updatingMonthFilter() { $this->resetPage(); }
     public function updatingYearFilter() { $this->resetPage(); }
@@ -36,13 +35,11 @@ class PermohonanMasuk extends Component
 
     public function mount()
     {
-        // Set default filter tahun ke tahun saat ini
         $this->yearFilter = date('Y');
     }
 
     public function render()
     {
-        // Optimasi: Gunakan withCount('items') agar lebih ringan di memory saat me-load tabel
         $query = Permohonan::with(['user', 'unit'])->withCount('items')->where('status', 'Baru');
         
         if (!empty($this->search)) {
@@ -64,13 +61,11 @@ class PermohonanMasuk extends Component
 
         $permohonanMasuk = $query->latest()->paginate($this->perPage);
 
-        // Ambil daftar tahun unik yang ada di database untuk opsi dropdown
         $availableYears = Permohonan::selectRaw('YEAR(tanggal) as year')
                             ->distinct()
                             ->orderBy('year', 'desc')
                             ->pluck('year');
 
-        // Jika database kosong, tampilkan tahun saat ini saja
         if($availableYears->isEmpty()){
             $availableYears = collect([date('Y')]);
         }
@@ -81,8 +76,8 @@ class PermohonanMasuk extends Component
     // --- MANAJEMEN MODAL ---
     public function showDetail($id)
     {
-        // Load data lengkap beserta itemnya hanya saat modal detail dibuka
-        $this->selectedData = Permohonan::with(['user', 'unit', 'items'])
+        // Pastikan memanggil relasi dokumenLampirans yang baru
+        $this->selectedData = Permohonan::with(['user', 'unit', 'items', 'dokumenLampirans'])
             ->where('id', $id)
             ->where('status', 'Baru')
             ->firstOrFail();
@@ -148,13 +143,29 @@ class PermohonanMasuk extends Component
     {
         $emailUser = $permohonan->user->email ?? null;
 
+        // 1. Logika Notifikasi Email (Synchronous)
         if ($emailUser) {
             if (Setting::get('is_email_active', true)) {
                 try {
+                    // Panggil relasi agar jika ada template email yang butuh detail, datanya sudah siap
+                    $permohonan->load(['dokumenLampirans', 'items', 'unit', 'user']);
                     Mail::to($emailUser)->send(new NotifikasiStatus($permohonan, $status));
                 } catch (\Exception $e) {
-                    // Silent Error Log
+                    // Silent Error Log agar sistem tidak berhenti jika koneksi email gagal
                 }
+            }
+        }
+
+        // 2. Wadah Logika Notifikasi WhatsApp (Gateway Fonnte)
+        if (Setting::get('is_wa_active', false)) {
+            $noHpUser = $permohonan->user->no_hp ?? null;
+            $apiToken = Setting::get('wa_api_token');
+
+            if ($noHpUser && $apiToken) {
+                // $statusText = $status == 'Proses' ? 'DITERIMA & SEDANG DIPROSES' : 'DITOLAK';
+                // $pesan = "Halo Unit {$permohonan->unit->nama_unit}, Permohonan pengadaan Anda '{$permohonan->judul}' saat ini berstatus: {$statusText}.";
+                
+                // Nanti logika cURL Fonnte di-uncomment dan ditaruh di sini
             }
         }
     }

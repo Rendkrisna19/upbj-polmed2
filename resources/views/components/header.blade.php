@@ -14,7 +14,7 @@
         </button>
 
         <div class="hidden sm:flex flex-col justify-center h-full">
-            <h2 class="text-base sm:text-lg font-extrabold text-gray-900 dark:text-white tracking-tight flex items-center gap-1.5">
+            <h2 class="text-base sm:text-lg font-extrabold !text-gray-900 dark:text-white tracking-tight flex items-center gap-1.5">
                 <span x-text="greeting"></span>, 
                 <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-light">
                     {{ explode(' ', auth()->user()->name ?? 'Pengguna')[0] }}

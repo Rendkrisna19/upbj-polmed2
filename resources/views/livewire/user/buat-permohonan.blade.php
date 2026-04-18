@@ -1,4 +1,13 @@
-<div class="w-full pb-12">
+<div class="w-full pb-12 relative">
+    
+    <div wire:loading.flex wire:target="store" class="fixed inset-0 z-[100] bg-gray-900/40 backdrop-blur-sm flex items-center justify-center">
+        <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl flex flex-col items-center max-w-sm w-full mx-4 animate-pulse">
+            <div class="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mb-4"></div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Memproses Data</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400 text-center">Mohon tunggu sebentar, sedang menyimpan dokumen dan mengirim notifikasi...</p>
+        </div>
+    </div>
+
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
@@ -76,7 +85,6 @@
                         </button>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-start pr-8">
-                            
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">File Dokumen {{ $index + 1 }}</label>
                                 
@@ -109,7 +117,7 @@
                                 @endif
 
                                 <div wire:loading wire:target="dokumens.{{ $index }}.file" class="text-purple-600 text-xs mt-2 font-medium flex items-center">
-                                    <i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Mengunggah...
+                                    <i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Mengunggah file, mohon tunggu...
                                 </div>
                                 @error("dokumens.$index.file") <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
@@ -187,12 +195,9 @@
 
         <div class="flex justify-end pt-4">
             <button type="submit" class="w-full sm:w-auto inline-flex justify-center items-center px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors focus:ring-4 focus:ring-purple-500/30" wire:loading.attr="disabled">
-                <span wire:loading.remove wire:target="store">
+                <span>
                     <i class="fa-solid fa-paper-plane mr-2"></i> 
                     {{ $permohonan_id ? 'Simpan Perubahan' : 'Kirim Permohonan' }}
-                </span>
-                <span wire:loading wire:target="store">
-                    <i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Memproses...
                 </span>
             </button>
         </div>
