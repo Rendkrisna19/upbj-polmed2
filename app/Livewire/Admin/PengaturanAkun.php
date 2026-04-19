@@ -38,10 +38,10 @@ class PengaturanAkun extends Component
     {
         $user = Auth::user();
 
+        // Validasi Dihapus untuk 'unit' karena hanya bisa diedit oleh Super Admin dari halaman kelola pengguna
         $this->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'unit' => 'nullable|string|max:255',
             'new_photo' => 'nullable|image|max:2048', // Maksimal 2MB
         ]);
 
@@ -58,7 +58,7 @@ class PengaturanAkun extends Component
 
         $user->name = $this->name;
         $user->email = $this->email;
-        $user->unit = $this->unit;
+        // $user->unit = $this->unit; <--- BARIS INI DIHAPUS AGAR USER TIDAK BISA BYPASS
         $user->save();
 
         $this->new_photo = null; // Reset input file
