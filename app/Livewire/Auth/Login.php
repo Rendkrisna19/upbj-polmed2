@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Auth;
 
+use App\Models\User; // Pastikan untuk meng-import model User
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
@@ -28,7 +29,6 @@ class Login extends Component
                 default       => '/',
             };
 
-            // PERBAIKAN: Hapus parameter navigate: true
             return $this->redirect($url); 
         }
     }
@@ -40,9 +40,19 @@ class Login extends Component
             'password' => 'required',
         ]);
 
+        // 1. Cek apakah email terdaftar di database
+        $user = User::where('email', $this->email)->first();
+
+        if (!$user) {
+            throw ValidationException::withMessages([
+                'email' => 'Email yang Anda masukkan tidak terdaftar.',
+            ]);
+        }
+
+        // 2. Jika email terdaftar, cek kecocokan password menggunakan Auth::attempt
         if (!Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
             throw ValidationException::withMessages([
-                'email' => 'Email atau password yang Anda masukkan salah.',
+                'password' => 'Kata sandi yang Anda masukkan salah.',
             ]);
         }
 
@@ -56,7 +66,6 @@ class Login extends Component
             default       => '/',
         };
 
-        // PERBAIKAN: Hapus parameter navigate: true di sini juga
         $this->redirect($url);
     }
 

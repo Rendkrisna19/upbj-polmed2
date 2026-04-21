@@ -85,8 +85,8 @@ class RealisasiSelesai extends Component
     // --- MANAJEMEN MODAL ---
     public function showDetail($id)
     {
-        // Ambil data lengkap beserta itemnya hanya saat modal dibuka
-        $this->detailData = Permohonan::with(['user', 'unit', 'items'])
+        // Panggil data lengkap beserta items dan dokumenLampirans (Multi Dokumen)
+        $this->detailData = Permohonan::with(['user', 'unit', 'items', 'dokumenLampirans'])
             ->where('id', $id)
             ->where('status', 'Selesai')
             ->firstOrFail();

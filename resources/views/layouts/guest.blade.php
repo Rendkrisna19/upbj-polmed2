@@ -43,10 +43,8 @@
             }
         }
         
-        // Panggil saat load
         initTheme();
         
-        // Tetap pertahankan navigasi SPA untuk Livewire
         document.addEventListener('livewire:navigated', () => {
             initTheme();
         });
@@ -58,12 +56,12 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans text-gray-900 dark:text-gray-100 antialiased bg-white dark:bg-base-dark transition-colors duration-300">
+<body class="font-sans text-gray-900 dark:text-gray-100 antialiased bg-gray-50 dark:bg-base-dark transition-colors duration-300">
     
-    <main>
+    <main class="min-h-screen flex items-center justify-center p-4 sm:p-8">
         {{ $slot }}
     </main>
 
     @livewireScripts
 </body>
-</html>
+</html

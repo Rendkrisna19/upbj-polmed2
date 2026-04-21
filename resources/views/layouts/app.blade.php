@@ -3,7 +3,20 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>UPBJ POLMED - @yield('title', 'Dashboard')</title>
+    
+    @php
+        $appName = \App\Models\Setting::where('key', 'app_name')->value('value') ?: 'UPBJ POLMED';
+        $appFavicon = \App\Models\Setting::where('key', 'app_favicon')->value('value');
+    @endphp
+
+    <title>{{ $appName }} - @yield('title', 'Dashboard')</title>
+
+    @if($appFavicon)
+        <link rel="icon" href="{{ asset('storage/' . $appFavicon) }}" type="image/x-icon">
+        <link rel="shortcut icon" href="{{ asset('storage/' . $appFavicon) }}" type="image/x-icon">
+    @else
+        <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    @endif
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

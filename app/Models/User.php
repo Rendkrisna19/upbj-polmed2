@@ -23,6 +23,7 @@ class User extends Authenticatable
         'unit',
         'role',
         'profile_photo',
+        'no_hp',
         
     ];
 

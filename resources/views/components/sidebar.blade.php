@@ -4,10 +4,22 @@
            sidebarCollapsed ? 'lg:w-20 w-64' : 'w-64'
        ]">
     
+    @php
+        $appName = \App\Models\Setting::where('key', 'app_name')->value('value') ?: 'UPBJ POLMED';
+        $appLogo = \App\Models\Setting::where('key', 'app_logo')->value('value');
+    @endphp
+
     <div class="h-16 flex items-center justify-center border-b border-gray-50 dark:border-gray-800/50 shrink-0 transition-all duration-300">
         <div class="flex items-center justify-center gap-3 w-full px-4" :class="sidebarCollapsed ? 'px-0' : ''">
-            <img src="{{ asset('images/logo.png') }}" alt="Logo POLMED" class="w-9 h-9 object-contain shrink-0 drop-shadow-sm">
-            <span x-show="!sidebarCollapsed" class="text-xl font-extrabold text-gray-900 dark:text-white tracking-wide" x-transition>UPBJ <span class="text-primary">POLMED</span></span>
+            @if($appLogo)
+                <img src="{{ asset('storage/' . $appLogo) }}" alt="Logo Aplikasi" class="w-9 h-9 object-contain shrink-0 drop-shadow-sm">
+            @else
+                <img src="{{ asset('images/logo.png') }}" alt="Logo Default" class="w-9 h-9 object-contain shrink-0 drop-shadow-sm">
+            @endif
+            
+            <span x-show="!sidebarCollapsed" class="text-xl font-extrabold text-gray-900 dark:text-white tracking-wide truncate" x-transition>
+                {{ $appName }}
+            </span>
         </div>
     </div>
 
@@ -98,11 +110,11 @@
                 </a>
 
                 @if(auth()->check() && auth()->user()->role === 'super_admin')
-<a href="{{ route('pengaturan_sistem') }}" wire:navigate class="flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group {{ request()->routeIs('pengaturan_sistem') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100' }}" :class="sidebarCollapsed ? 'justify-center' : ''">
-    <i class="fa-solid fa-sliders w-6 text-center text-lg {{ request()->routeIs('pengaturan_sistem') ? 'text-white' : 'text-gray-400 group-hover:text-primary transition-colors' }}"></i>
-    <span x-show="!sidebarCollapsed" class="ml-3">Pengaturan Sistem</span>
-</a>
-@endif
+                <a href="{{ route('pengaturan_sistem') }}" wire:navigate class="flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group {{ request()->routeIs('pengaturan_sistem') ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100' }}" :class="sidebarCollapsed ? 'justify-center' : ''">
+                    <i class="fa-solid fa-sliders w-6 text-center text-lg {{ request()->routeIs('pengaturan_sistem') ? 'text-white' : 'text-gray-400 group-hover:text-primary transition-colors' }}"></i>
+                    <span x-show="!sidebarCollapsed" class="ml-3">Pengaturan Sistem</span>
+                </a>
+                @endif
             </div>
         </div>
 

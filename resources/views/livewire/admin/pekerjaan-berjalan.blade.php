@@ -1,14 +1,23 @@
-<div class="w-full pb-12">
+<div class="w-full pb-12" wire:poll.10s>
+    
+    <div wire:loading.flex wire:target="selesaikanPekerjaan" class="fixed inset-0 z-[150] bg-gray-900/60 backdrop-blur-sm flex items-center justify-center transition-all">
+        <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl flex flex-col items-center max-w-sm w-full mx-4 animate-pulse border border-gray-200 dark:border-gray-700">
+            <div class="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mb-4"></div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 text-center">Menyelesaikan Pekerjaan...</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400 text-center">Mohon tunggu, sistem sedang memindahkan ke arsip Realisasi dan mengirim notifikasi email.</p>
+        </div>
+    </div>
+
     <style>
         .pagination-custom nav span[aria-current="page"] > span {
-            background-color: #9333ea !important; /* text-purple-600 */
+            background-color: #9333ea !important; 
             border-color: #9333ea !important;
             color: white !important;
         }
         .pagination-custom nav a:hover {
-            background-color: #faf5ff !important; /* bg-purple-50 */
-            color: #7e22ce !important; /* text-purple-700 */
-            border-color: #d8b4fe !important; /* border-purple-300 */
+            background-color: #faf5ff !important; 
+            color: #7e22ce !important; 
+            border-color: #d8b4fe !important; 
         }
     </style>
 
@@ -24,8 +33,12 @@
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Daftar pengadaan barang dan jasa yang sedang dalam proses pengerjaan oleh tim Admin.</p>
     </div>
 
-    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden relative">
         
+        <div wire:loading.flex wire:target="search, monthFilter, yearFilter, perPage" class="absolute inset-0 z-10 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm items-center justify-center">
+            <div class="w-8 h-8 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+        </div>
+
         <div class="p-5 border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20 space-y-4 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:justify-between gap-4">
             
             <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto flex-grow">
@@ -170,14 +183,28 @@
                             </div>
 
                             <div class="bg-blue-50 dark:bg-blue-900/10 rounded-xl p-4 border border-blue-200 dark:border-blue-800/30">
-                                <p class="text-xs text-blue-700 dark:text-blue-400 mb-2 uppercase font-semibold tracking-wider">Dokumen Referensi</p>
-                                @if($selectedData->file_pdf)
-                                    <button wire:click="openPdfPreview('{{ $selectedData->file_pdf }}')" class="w-full inline-flex items-center justify-center px-4 py-2 bg-white hover:bg-gray-50 text-blue-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-blue-400 text-sm font-medium rounded-lg transition-colors border border-blue-300 dark:border-blue-700 shadow-sm">
-                                        <i class="fa-solid fa-file-pdf mr-2 text-red-500"></i> Cek Dokumen PDF
-                                    </button>
-                                @else
-                                    <span class="text-sm text-gray-500 italic block mt-1">Tidak ada dokumen</span>
-                                @endif
+                                <p class="text-xs text-blue-700 dark:text-blue-400 mb-3 uppercase font-semibold tracking-wider flex items-center justify-between">
+                                    Dokumen Referensi
+                                    <span class="bg-blue-200 text-blue-800 dark:bg-blue-800 dark:text-blue-200 py-0.5 px-2 rounded-full text-[10px]">{{ $selectedData->dokumenLampirans->count() }} File</span>
+                                </p>
+                                
+                                <div class="space-y-2">
+                                    @forelse($selectedData->dokumenLampirans as $doc)
+                                        <div class="flex items-center justify-between bg-white dark:bg-gray-800 p-2.5 rounded-lg border border-blue-100 dark:border-blue-800/50 shadow-sm">
+                                            <div class="flex items-center overflow-hidden mr-2">
+                                                <i class="fa-solid fa-file-pdf text-red-500 text-lg mr-2 shrink-0"></i>
+                                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300 truncate" title="{{ $doc->nama_dokumen ?: 'Dokumen ' . $loop->iteration }}">
+                                                    {{ $doc->nama_dokumen ?: 'Dokumen ' . $loop->iteration }}
+                                                </span>
+                                            </div>
+                                            <button wire:click="openPdfPreview('{{ $doc->file_path }}')" class="shrink-0 text-[11px] font-bold px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/50 dark:hover:bg-blue-700 dark:text-blue-300 rounded-md transition-colors">
+                                                Buka
+                                            </button>
+                                        </div>
+                                    @empty
+                                        <span class="text-sm text-gray-500 italic block mt-1">Tidak ada dokumen dilampirkan</span>
+                                    @endforelse
+                                </div>
                             </div>
                         </div>
 
