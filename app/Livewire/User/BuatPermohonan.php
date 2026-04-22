@@ -8,14 +8,15 @@ use App\Models\DokumenLampiran;
 use App\Models\Unit;
 use App\Models\Setting; 
 use App\Models\User;    
-use App\Jobs\KirimEmailPermohonanBaru; // Panggil Job
+use App\Mail\NotifikasiPermohonanBaru;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http; // WAJIB TAMBAHKAN INI
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
-use Illuminate\Support\Facades\Mail;
 
 #[Layout('layouts.app')]
 #[Title('Form Permohonan - UPBJ POLMED')]
@@ -111,12 +112,11 @@ class BuatPermohonan extends Component
             $isBaru = false; 
 
             if ($this->permohonan_id) {
-                // UPDATE PERMOHONAN
+                // UPDATE DATA
                 $permohonan = Permohonan::find($this->permohonan_id);
                 $permohonan->judul = $this->judul;
                 $permohonan->tanggal = $this->tanggal;
                 $permohonan->save();
-
                 $permohonan->items()->delete();
 
                 foreach ($this->deleted_dokumens as $del_id) {
@@ -126,9 +126,8 @@ class BuatPermohonan extends Component
                         $doc->delete(); 
                     }
                 }
-
             } else {
-                // CREATE PERMOHONAN BARU
+                // CREATE DATA BARU
                 $permohonan = Permohonan::create([
                     'user_id' => auth()->id(),
                     'unit_id' => $unitId,
@@ -150,7 +149,6 @@ class BuatPermohonan extends Component
             foreach ($this->dokumens as $docData) {
                 if ($docData['file']) {
                     $path = $docData['file']->store('dokumen_permohonan', 'public');
-                    
                     if ($docData['existing_id']) {
                         $doc = DokumenLampiran::find($docData['existing_id']);
                         Storage::disk('public')->delete($doc->file_path);
@@ -176,40 +174,56 @@ class BuatPermohonan extends Component
             // ==============================================================
             // LOGIKA NOTIFIKASI DINAMIS (EMAIL & WHATSAPP) HANYA JIKA BARU
             // ==============================================================
-            // ==============================================================
-            // LOGIKA NOTIFIKASI DINAMIS (EMAIL & WHATSAPP) HANYA JIKA BARU
-            // ==============================================================
             if ($isBaru) {
-                
-                // 1. Notifikasi Email (Dikirim langsung / Synchronous)
+                // 1. Notifikasi Email ke Semua Admin
                 if (Setting::get('is_email_active', true)) {
                     $adminEmails = User::where('role', 'admin')->pluck('email')->toArray();
-                    
                     if (!empty($adminEmails)) {
                         try {
-                            // Query relasi lengkap agar PDF ikut terlampir di email
                             $permohonanLengkap = Permohonan::with(['user', 'unit', 'items', 'dokumenLampirans'])->find($permohonan->id);
-                            
-                            // Kirim langsung (Layar akan loading 3-5 detik di sini)
-                            Mail::to($adminEmails)->send(new \App\Mail\NotifikasiPermohonanBaru($permohonanLengkap));
+                            Mail::to($adminEmails)->send(new NotifikasiPermohonanBaru($permohonanLengkap));
                         } catch (\Exception $e) {
-                            // Silent fail: Abaikan jika gagal agar data tetap tersimpan
+                            // Silent fail
                         }
                     }
                 }
 
-                // 2. Wadah Logika Notifikasi WhatsApp Gateway (Fonnte)
+                // 2. Notifikasi WhatsApp ke Semua Admin (Fonnte)
                 if (Setting::get('is_wa_active', false)) {
                     $adminPhones = User::where('role', 'admin')->whereNotNull('no_hp')->pluck('no_hp')->toArray();
                     $apiToken = Setting::get('wa_api_token');
                     
                     if (!empty($adminPhones) && !empty($apiToken)) {
-                        // $pesan = "Halo Admin UPBJ, terdapat permohonan baru dari Unit " . ($unit->nama_unit ?? 'Terkait') . " dengan judul: " . $this->judul;
-                        // Logika cURL ke Fonnte
+                        $namaUnit = $unit->nama_unit ?? 'Terkait';
+                        $namaUser = auth()->user()->name;
+                        $tiket = str_pad($permohonan->id, 5, '0', STR_PAD_LEFT);
+
+                        // Template Pesan untuk Admin
+                        $pesan = "🔔 *NOTIFIKASI PERMOHONAN BARU*\n\n";
+                        $pesan .= "Halo Admin UPBJ, terdapat pengajuan baru yang masuk ke sistem.\n\n";
+                        $pesan .= "🆔 *No. Tiket:* #PRM-{$tiket}\n";
+                        $pesan .= "🏢 *Unit:* {$namaUnit}\n";
+                        $pesan .= "👤 *Pengaju:* {$namaUser}\n";
+                        $pesan .= "📌 *Judul:* {$this->judul}\n";
+                        $pesan .= "📅 *Tanggal:* " . date('d/m/Y') . "\n\n";
+                        $pesan .= "Silakan login ke dashboard Admin untuk meninjau detail permohonan dan dokumen lampiran.\n\n";
+                        $pesan .= " Terima kasih,\n*Sistem UPBJ POLMED*";
+
+                        // Kirim ke Fonnte (Bisa multi-target dipisah koma)
+                        try {
+                            Http::withHeaders([
+                                'Authorization' => $apiToken,
+                            ])->post('https://api.fonnte.com/send', [
+                                'target' => implode(',', $adminPhones),
+                                'message' => $pesan,
+                                'countryCode' => '62',
+                            ]);
+                        } catch (\Exception $e) {
+                            // Silent fail
+                        }
                     }
                 }
             }
-            // ==============================================================
             // ==============================================================
 
             $this->dispatch('toast', [

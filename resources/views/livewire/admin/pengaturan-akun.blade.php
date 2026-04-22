@@ -41,7 +41,7 @@
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div class="{{ auth()->user()->role === 'user' ? 'sm:col-span-2' : 'sm:col-span-1' }}">
+                        <div class="sm:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Lengkap</label>
                             <input type="text" wire:model="name" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 rounded-xl focus:ring-primary focus:border-primary p-3 transition-colors">
                             @error('name') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
@@ -53,8 +53,24 @@
                             @error('email') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
-                        @if(auth()->user()->role === 'user')
                         <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nomor WhatsApp <span class="text-red-500">*</span></label>
+                            <div class="flex">
+                                <select wire:model="country_code" class="bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-l-xl focus:ring-primary focus:border-primary p-3 border-r-0 transition-colors">
+                                    <option value="62">🇮🇩 +62</option>
+                                    <option value="1">🇺🇸 +1</option>
+                                    <option value="44">🇬🇧 +44</option>
+                                    <option value="60">🇲🇾 +60</option>
+                                    <option value="65">🇸🇬 +65</option>
+                                </select>
+                                <input type="text" wire:model="no_hp" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 rounded-r-xl focus:ring-primary focus:border-primary p-3 transition-colors" placeholder="812345678xx">
+                            </div>
+                            <p class="text-[10px] text-gray-400 mt-1"><i class="fa-solid fa-circle-info mr-1"></i>Masukkan nomor tanpa angka 0 di depan.</p>
+                            @error('no_hp') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                        </div>
+
+                        @if(auth()->user()->role === 'user')
+                        <div class="sm:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Unit / Divisi</label>
                             <input type="text" wire:model="unit" disabled class="w-full bg-gray-100 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 rounded-xl p-3 cursor-not-allowed opacity-80">
                             <p class="text-[11px] text-gray-400 mt-1.5"><i class="fa-solid fa-circle-info mr-1"></i>Perubahan unit hanya dapat dilakukan oleh Super Admin.</p>

@@ -139,33 +139,60 @@ class PermohonanMasuk extends Component
     }
 
     // --- FUNGSI NOTIFIKASI DINAMIS ---
+   // --- FUNGSI NOTIFIKASI DINAMIS ---
     protected function kirimNotifikasiKeUser($permohonan, $status)
     {
         $emailUser = $permohonan->user->email ?? null;
 
         // 1. Logika Notifikasi Email (Synchronous)
-        if ($emailUser) {
-            if (Setting::get('is_email_active', true)) {
-                try {
-                    // Panggil relasi agar jika ada template email yang butuh detail, datanya sudah siap
-                    $permohonan->load(['dokumenLampirans', 'items', 'unit', 'user']);
-                    Mail::to($emailUser)->send(new NotifikasiStatus($permohonan, $status));
-                } catch (\Exception $e) {
-                    // Silent Error Log agar sistem tidak berhenti jika koneksi email gagal
-                }
+        if ($emailUser && Setting::get('is_email_active', true)) {
+            try {
+                $permohonan->load(['dokumenLampirans', 'items', 'unit', 'user']);
+                Mail::to($emailUser)->send(new NotifikasiStatus($permohonan, $status));
+            } catch (\Exception $e) {
+                // Silent Error Log agar sistem tidak berhenti jika koneksi email gagal
             }
         }
 
-        // 2. Wadah Logika Notifikasi WhatsApp (Gateway Fonnte)
+        // 2. Logika Notifikasi WhatsApp (Gateway Fonnte)
         if (Setting::get('is_wa_active', false)) {
             $noHpUser = $permohonan->user->no_hp ?? null;
             $apiToken = Setting::get('wa_api_token');
 
             if ($noHpUser && $apiToken) {
-                // $statusText = $status == 'Proses' ? 'DITERIMA & SEDANG DIPROSES' : 'DITOLAK';
-                // $pesan = "Halo Unit {$permohonan->unit->nama_unit}, Permohonan pengadaan Anda '{$permohonan->judul}' saat ini berstatus: {$statusText}.";
+                // Siapkan variabel untuk template
+                $statusIcon = $status == 'Proses' ? '✅' : '❌';
+                $statusText = $status == 'Proses' ? '*DITERIMA & DIPROSES*' : '*DITOLAK*';
+                $tiket = str_pad($permohonan->id, 5, '0', STR_PAD_LEFT);
+                $namaUnit = $permohonan->unit->nama_unit ?? 'Terkait';
+
+                // Template Pesan WA
+                $pesan = "Halo *Unit {$namaUnit}*,\n\n";
+                $pesan .= "Permohonan pengadaan barang/jasa Anda telah ditinjau oleh Tim UPBJ POLMED.\n\n";
+                $pesan .= "🏷️ *No. Tiket:* #PRM-{$tiket}\n";
+                $pesan .= "📌 *Judul:* {$permohonan->judul}\n";
+                $pesan .= "📊 *Status:* {$statusIcon} {$statusText}\n\n";
                 
-                // Nanti logika cURL Fonnte di-uncomment dan ditaruh di sini
+                if ($status == 'Proses') {
+                    $pesan .= "Tim kami akan segera menindaklanjuti permohonan ini. Silakan pantau dashboard untuk update selanjutnya.\n\n";
+                } else {
+                    $pesan .= "Mohon maaf, permohonan ini belum dapat kami proses saat ini. Silakan hubungi Admin untuk informasi lebih lanjut.\n\n";
+                }
+                
+                $pesan .= "Terima kasih,\n*Sistem UPBJ POLMED*";
+
+                // Tembak API Fonnte menggunakan Laravel HTTP Client
+                try {
+                    \Illuminate\Support\Facades\Http::withHeaders([
+                        'Authorization' => $apiToken,
+                    ])->post('https://api.fonnte.com/send', [
+                        'target' => $noHpUser,
+                        'message' => $pesan,
+                        'countryCode' => '62', // Otomatis mengubah awalan 08 menjadi 628
+                    ]);
+                } catch (\Exception $e) {
+                    // Silent fail jika WA gagal kirim agar aplikasi tidak crash
+                }
             }
         }
     }
