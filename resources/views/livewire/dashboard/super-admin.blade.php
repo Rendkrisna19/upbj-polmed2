@@ -1,13 +1,25 @@
 <div>
+    <div class="mb-8 rounded-3xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800 transition-all duration-300">
+        
+        <img src="{{ asset('banner/banner-putih.png') }}" 
+             alt="Banner Terang" 
+             class="w-full h-32 md:h-48 lg:h-56 object-cover block dark:hidden transition-opacity duration-300">
+             
+        <img src="{{ asset('banner/banner-hitam.png') }}" 
+             alt="Banner Gelap" 
+             class="w-full h-32 md:h-48 lg:h-56 object-cover hidden dark:block transition-opacity duration-300">
+             
+    </div>
+
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-        <div>
+        {{-- <div>
             <h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 {{ $this->greeting }}, {{ explode(' ', auth()->user()->name ?? 'Super Admin')[0] }}
             </h2>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-2">
                 <i class="fa-regular fa-clock"></i> {{ $this->currentDate }}
             </p>
-        </div>
+        </div> --}}
 
         <div class="flex items-center gap-3 bg-white dark:bg-card-dark p-2 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 relative">
             
